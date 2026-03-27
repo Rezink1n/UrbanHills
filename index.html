@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Urban Economy — Alpha</title>
+<title>UrbanHills — 0.1</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -282,7 +282,7 @@ textarea.form-input { resize: vertical; min-height: 80px; }
 <div id="auth-screen">
   <div class="auth-bg"></div>
   <div class="auth-box">
-    <div class="auth-logo">Urban<span>Economy</span></div>
+    <div class="auth-logo">Urban<span>Hills</span></div>
     <div class="auth-subtitle">// alpha v0.1 — ciudad en construcción</div>
     <div class="auth-tabs">
       <button class="auth-tab active" onclick="switchAuthTab('login')">Iniciar Sesión</button>
@@ -466,15 +466,6 @@ textarea.form-input { resize: vertical; min-height: 80px; }
         <button class="btn-sm" onclick="openModal('modal-new-contract')" style="border-color:var(--accent2);color:var(--accent2)">+ Nuevo contrato</button>
       </div>
       <div id="contracts-list"><div class="loading">Cargando</div></div>
-    </div>
-
-    <!-- ── ADMIN ── -->
-    <div class="page" id="page-admin">
-      <div class="page-header">
-        <div class="page-title">Panel de Administración <span style="color:var(--accent);font-size:14px">👑 ALCALDÍA</span></div>
-        <div class="page-sub">// control total de la ciudad — solo administradores</div>
-      </div>
-      <div id="admin-content"><div class="loading">Cargando</div></div>
     </div>
 
   </main>
@@ -709,35 +700,20 @@ async function doRegister() {
   if (!name || !email || !pass) return showAuthMsg('Completa todos los campos', false);
   if (pass.length < 6) return showAuthMsg('La contraseña debe tener al menos 6 caracteres', false);
   const btn = event.target; btn.disabled = true; btn.textContent = 'Creando ciudadano...';
-
-  const { data, error } = await sb.auth.signUp({ email, password: pass, options: { data: { full_name: name } } });
-  if (error) { btn.disabled = false; btn.textContent = 'Crear Ciudadano →'; return showAuthMsg(error.message, false); }
-
-  const userId = data?.user?.id;
-  if (!userId) { btn.disabled = false; btn.textContent = 'Crear Ciudadano →'; return showAuthMsg('No se pudo crear usuario. Verifica tu email.', false); }
-
-  const dni = genCode('DNI');
-  const isAdmin = email.toLowerCase().includes('admin');
-  const startMoney = isAdmin ? 999999999 : 1500;
-  const { error: pe } = await sb.from('players').insert({
-    id: userId, name, email, dni,
-    money: startMoney,
-    job_status: isAdmin ? '👑 Administrador' : 'Desempleado',
-    role: isAdmin ? 'admin' : 'player',
-    address: null, registered_at: new Date().toISOString()
-  });
-  if (pe) { btn.disabled = false; btn.textContent = 'Crear Ciudadano →'; return showAuthMsg('Error creando perfil: ' + pe.message, false); }
-
-  // Auto-login immediately
-  const { data: loginData, error: loginErr } = await sb.auth.signInWithPassword({ email, password: pass });
+  const { data, error } = await sb.auth.signUp({ email, password: pass });
   btn.disabled = false; btn.textContent = 'Crear Ciudadano →';
-  if (loginErr) {
-    showAuthMsg('✅ Cuenta creada. Inicia sesión.', true);
-    switchAuthTab('login');
-    document.getElementById('login-email').value = email;
-    return;
-  }
-  await initApp(loginData.user);
+  if (error) return showAuthMsg(error.message, false);
+
+  // Create player profile
+  const dni = genCode('DNI');
+  const { error: pe } = await sb.from('players').insert({
+    id: data.user.id, name, email, dni,
+    money: 1500, job_status: 'Desempleado', address: null, registered_at: new Date().toISOString()
+  });
+  if (pe) return showAuthMsg('Error creando perfil: ' + pe.message, false);
+
+  // Generate initial plots for the city (only if first user)
+  showAuthMsg('¡Ciudadano creado! Revisa tu email para confirmar.', true);
 }
 
 async function doLogout() {
@@ -757,9 +733,6 @@ async function initApp(user) {
   document.getElementById('auth-screen').style.display = 'none';
   document.getElementById('app').style.display = 'block';
   updateSidebar();
-  if (playerData?.role === 'admin') {
-    document.getElementById('nav-admin').style.display = 'flex';
-  }
   await ensureCityPlots();
   loadPage('dashboard');
 }
@@ -797,11 +770,7 @@ async function ensureCityPlots() {
 //  PAGE LOADER
 // ══════════════════════════════════════════════════
 function loadPage(name) {
-function loadPage(name) {
-  const loaders = { dashboard: loadDashboard, map: loadMap, market: loadMarket, jobs: loadJobs, companies: loadCompanies, properties: loadProperties, contracts: loadContracts, admin: loadAdmin };
-  if (loaders[name]) loaders[name]();
-}
-
+  const loaders = { dashboard: loadDashboard, map: loadMap, market: loadMarket, jobs: loadJobs, companies: loadCompanies, properties: loadProperties, contracts: loadContracts };
   if (loaders[name]) loaders[name]();
 }
 
@@ -1157,255 +1126,6 @@ async function signContract(id) {
 // ══════════════════════════════════════════════════
 //  AUTO LOGIN CHECK
 // ══════════════════════════════════════════════════
-
-// ══════════════════════════════════════════════════
-//  ADMIN PANEL
-// ══════════════════════════════════════════════════
-async function loadAdmin() {
-  if (!playerData || playerData.role !== 'admin') {
-    document.getElementById('admin-content').innerHTML = '<div class="empty"><div class="empty-icon">🚫</div><div class="empty-text">Acceso denegado</div></div>';
-    return;
-  }
-  // Stats
-  const [{ count: playerCount }, { count: companyCount }, { count: plotCount }, { count: contractCount }] = await Promise.all([
-    sb.from('players').select('*', { count: 'exact', head: true }),
-    sb.from('companies').select('*', { count: 'exact', head: true }),
-    sb.from('plots').select('*', { count: 'exact', head: true }),
-    sb.from('contracts').select('*', { count: 'exact', head: true }),
-  ]);
-  const { data: players } = await sb.from('players').select('*').order('registered_at', { ascending: false });
-  const { data: companies } = await sb.from('companies').select('*').order('created_at', { ascending: false });
-  const { data: listings } = await sb.from('market_listings').select('*, players(name)').order('created_at', { ascending: false }).limit(20);
-
-  document.getElementById('admin-content').innerHTML = `
-    <div class="cards" style="grid-template-columns:repeat(4,1fr)">
-      <div class="card"><div class="card-label">Ciudadanos</div><div class="card-value">${playerCount}</div></div>
-      <div class="card green"><div class="card-label">Empresas</div><div class="card-value">${companyCount}</div></div>
-      <div class="card blue"><div class="card-label">Parcelas</div><div class="card-value">${plotCount}</div></div>
-      <div class="card red"><div class="card-label">Contratos</div><div class="card-value">${contractCount}</div></div>
-    </div>
-
-    <div class="tabs" id="admin-tabs">
-      <button class="tab active" onclick="adminTab('players', this)">👥 Jugadores</button>
-      <button class="tab" onclick="adminTab('companies', this)">🏭 Empresas</button>
-      <button class="tab" onclick="adminTab('market', this)">🏪 Mercado</button>
-      <button class="tab" onclick="adminTab('resources', this)">📦 Recursos</button>
-      <button class="tab" onclick="adminTab('money', this)">💰 Dinero</button>
-    </div>
-
-    <div id="admin-tab-players">
-      <div class="table-wrap">
-        <div class="table-header">
-          <span class="table-title">Todos los Jugadores</span>
-        </div>
-        <table>
-          <thead><tr><th>DNI</th><th>Nombre</th><th>Email</th><th>Saldo</th><th>Empleo</th><th>Rol</th><th>Acciones</th></tr></thead>
-          <tbody>${(players||[]).map(p => `<tr>
-            <td><span class="code">${p.dni}</span></td>
-            <td><strong>${p.name}</strong></td>
-            <td style="font-size:11px;color:var(--muted)">${p.email}</td>
-            <td>💰 ${fmt(p.money)}</td>
-            <td>${p.job_status}</td>
-            <td><span class="badge badge-${p.role==='admin'?'yellow':'blue'}">${p.role||'player'}</span></td>
-            <td style="display:flex;gap:4px">
-              <button class="btn-sm" onclick="adminGiveMoney('${p.id}','${p.name}')">💰 Dar dinero</button>
-              <button class="btn-sm" onclick="adminSetRole('${p.id}','${p.role||'player'}')">👑 Rol</button>
-              <button class="btn-sm" style="border-color:var(--accent3);color:var(--accent3)" onclick="adminBanPlayer('${p.id}')">🚫 Ban</button>
-            </td>
-          </tr>`).join('')}</tbody>
-        </table>
-      </div>
-    </div>
-
-    <div id="admin-tab-companies" style="display:none">
-      <div class="table-wrap">
-        <div class="table-header"><span class="table-title">Todas las Empresas</span></div>
-        <table>
-          <thead><tr><th>Código</th><th>Nombre</th><th>Tipo</th><th>Capital</th><th>Estado</th><th>Acciones</th></tr></thead>
-          <tbody>${(companies||[]).map(c => `<tr>
-            <td><span class="code">${c.code}</span></td>
-            <td><strong>${c.name}</strong></td>
-            <td><span class="badge badge-blue">${c.type}</span></td>
-            <td>💰 ${fmt(c.capital)}</td>
-            <td><span class="badge badge-${c.status==='activa'?'green':'red'}">${c.status}</span></td>
-            <td><button class="btn-sm" style="border-color:var(--accent3);color:var(--accent3)" onclick="adminCloseCompany('${c.id}')">Cerrar</button></td>
-          </tr>`).join('')}</tbody>
-        </table>
-      </div>
-    </div>
-
-    <div id="admin-tab-market" style="display:none">
-      <div class="table-wrap">
-        <div class="table-header">
-          <span class="table-title">Todas las Ofertas del Mercado</span>
-          <button class="btn-sm" onclick="adminClearMarket()" style="border-color:var(--accent3);color:var(--accent3)">🗑️ Limpiar expirados</button>
-        </div>
-        <table>
-          <thead><tr><th>Código</th><th>Producto</th><th>Precio</th><th>Qty</th><th>Vendedor</th><th>Estado</th><th></th></tr></thead>
-          <tbody>${(listings||[]).map(l => `<tr>
-            <td><span class="code">${l.code}</span></td>
-            <td>${l.product}</td>
-            <td>💰 ${fmt(l.price)}</td>
-            <td>${l.quantity}</td>
-            <td style="font-size:11px">${l.players?.name||'–'}</td>
-            <td><span class="badge badge-${l.status==='active'?'green':'yellow'}">${l.status}</span></td>
-            <td><button class="btn-sm" style="border-color:var(--accent3);color:var(--accent3)" onclick="adminRemoveListing('${l.id}')">✕</button></td>
-          </tr>`).join('')}</tbody>
-        </table>
-      </div>
-    </div>
-
-    <div id="admin-tab-resources" style="display:none">
-      <div class="table-wrap">
-        <div class="table-header"><span class="table-title">Inyectar Recursos al Mercado</span></div>
-        <div style="padding:20px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
-          <div class="form-group"><label class="form-label">Producto</label><input class="form-input" id="adm-product" placeholder="Ej: Ladrillos"></div>
-          <div class="form-group"><label class="form-label">Categoría</label>
-            <select class="form-input" id="adm-category">
-              <option>Materiales construcción</option><option>Alimentación</option><option>Manufactura</option>
-              <option>Servicios</option><option>Tecnología</option><option>Transporte</option><option>Otro</option>
-            </select>
-          </div>
-          <div class="form-group"><label class="form-label">Cantidad</label><input class="form-input" id="adm-qty" type="number" value="1000"></div>
-          <div class="form-group"><label class="form-label">Precio unitario (💰)</label><input class="form-input" id="adm-price" type="number" value="5"></div>
-          <div class="form-group"><label class="form-label">Descripción</label><input class="form-input" id="adm-desc" placeholder="Recurso base del gobierno"></div>
-          <div class="form-group" style="display:flex;align-items:flex-end">
-            <button class="btn-primary" style="clip-path:none" onclick="adminInjectResource()">📦 Inyectar al mercado</button>
-          </div>
-        </div>
-        <div style="padding:0 20px 16px;font-family:var(--font-mono);font-size:11px;color:var(--muted)">
-          Los recursos se publicarán como oferta del gobierno (Administración Municipal)
-        </div>
-      </div>
-      <div class="table-wrap" style="margin-top:16px">
-        <div class="table-header"><span class="table-title">Recursos Rápidos Predefinidos</span></div>
-        <div style="padding:16px;display:flex;flex-wrap:wrap;gap:8px">
-          ${[
-            ['Ladrillos','Materiales construcción',1000,5],
-            ['Madera','Materiales construcción',800,8],
-            ['Cemento','Materiales construcción',500,12],
-            ['Trigo','Alimentación',2000,3],
-            ['Pan','Alimentación',1500,4],
-            ['Acero','Manufactura',300,20],
-            ['Electricidad','Servicios',5000,2],
-            ['Combustible','Transporte',1000,15],
-          ].map(([p,c,q,pr]) => `<button class="btn-sm" onclick="adminQuickInject('${p}','${c}',${q},${pr})" style="border-color:var(--accent2);color:var(--accent2)">${p} (${q}u × 💰${pr})</button>`).join('')}
-        </div>
-      </div>
-    </div>
-
-    <div id="admin-tab-money" style="display:none">
-      <div class="table-wrap">
-        <div class="table-header"><span class="table-title">Gestión de Dinero</span></div>
-        <div style="padding:20px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
-          <div class="form-group"><label class="form-label">Jugador (DNI o nombre)</label>
-            <select class="form-input" id="adm-player-sel">
-              ${(players||[]).map(p => `<option value="${p.id}">${p.name} — ${p.dni} (💰${fmt(p.money)})</option>`).join('')}
-            </select>
-          </div>
-          <div class="form-group"><label class="form-label">Cantidad (💰)</label><input class="form-input" id="adm-amount" type="number" value="10000"></div>
-          <div class="form-group" style="display:flex;align-items:flex-end;gap:8px">
-            <button class="btn-primary" style="clip-path:none;flex:1" onclick="adminTransferMoney(true)">+ Dar dinero</button>
-            <button class="btn-danger" style="flex:1" onclick="adminTransferMoney(false)">− Quitar dinero</button>
-          </div>
-        </div>
-        <div style="padding:0 20px 16px">
-          <button class="btn-sm" style="border-color:var(--accent);color:var(--accent)" onclick="adminGiveAllMoney()">💰 Dar 5.000 a TODOS los jugadores</button>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-function adminTab(tab, el) {
-  ['players','companies','market','resources','money'].forEach(t => {
-    const el2 = document.getElementById('admin-tab-' + t);
-    if (el2) el2.style.display = t === tab ? 'block' : 'none';
-  });
-  document.querySelectorAll('#admin-tabs .tab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-}
-
-async function adminGiveMoney(playerId, name) {
-  const amt = parseInt(prompt(`¿Cuánto dinero dar a ${name}?`, '10000'));
-  if (isNaN(amt) || amt <= 0) return;
-  const { data: p } = await sb.from('players').select('money').eq('id', playerId).single();
-  await sb.from('players').update({ money: (p?.money || 0) + amt }).eq('id', playerId);
-  toast(`✅ 💰 ${fmt(amt)} dados a ${name}`);
-  loadAdmin();
-}
-
-async function adminSetRole(playerId, currentRole) {
-  const newRole = currentRole === 'admin' ? 'player' : 'admin';
-  await sb.from('players').update({ role: newRole }).eq('id', playerId);
-  toast(`✅ Rol cambiado a ${newRole}`);
-  loadAdmin();
-}
-
-async function adminBanPlayer(playerId) {
-  if (!confirm('¿Banear este jugador?')) return;
-  await sb.from('players').update({ job_status: '🚫 Baneado', money: 0 }).eq('id', playerId);
-  toast('Jugador baneado', false);
-  loadAdmin();
-}
-
-async function adminCloseCompany(companyId) {
-  if (!confirm('¿Cerrar esta empresa?')) return;
-  await sb.from('companies').update({ status: 'cerrada' }).eq('id', companyId);
-  toast('Empresa cerrada');
-  loadAdmin();
-}
-
-async function adminClearMarket() {
-  await sb.from('market_listings').delete().eq('status', 'sold');
-  toast('✅ Ofertas vendidas eliminadas');
-  loadAdmin();
-}
-
-async function adminRemoveListing(id) {
-  await sb.from('market_listings').delete().eq('id', id);
-  toast('Oferta eliminada');
-  loadAdmin();
-}
-
-async function adminInjectResource() {
-  const product = document.getElementById('adm-product').value.trim();
-  const category = document.getElementById('adm-category').value;
-  const qty = parseInt(document.getElementById('adm-qty').value);
-  const price = parseInt(document.getElementById('adm-price').value);
-  const desc = document.getElementById('adm-desc').value.trim();
-  if (!product || !qty || !price) return toast('Completa los campos', false);
-  await sb.from('market_listings').insert({ code: genCode('GOV'), product, category, quantity: qty, price, description: desc || 'Recurso oficial del gobierno', seller_id: currentUser.id, status: 'active', buyer_id: null });
-  toast(`✅ ${qty}x ${product} inyectado al mercado`);
-  loadAdmin();
-}
-
-async function adminQuickInject(product, category, qty, price) {
-  await sb.from('market_listings').insert({ code: genCode('GOV'), product, category, quantity: qty, price, description: 'Recurso oficial del gobierno municipal', seller_id: currentUser.id, status: 'active', buyer_id: null });
-  toast(`✅ ${qty}x ${product} inyectado al mercado`);
-}
-
-async function adminTransferMoney(add) {
-  const playerId = document.getElementById('adm-player-sel').value;
-  const amt = parseInt(document.getElementById('adm-amount').value);
-  if (!playerId || isNaN(amt) || amt <= 0) return toast('Datos inválidos', false);
-  const { data: p } = await sb.from('players').select('money,name').eq('id', playerId).single();
-  const newMoney = add ? (p.money + amt) : Math.max(0, p.money - amt);
-  await sb.from('players').update({ money: newMoney }).eq('id', playerId);
-  toast(`✅ ${add ? '+' : '-'}💰 ${fmt(amt)} a ${p.name}`);
-  loadAdmin();
-}
-
-async function adminGiveAllMoney() {
-  if (!confirm('¿Dar 5.000 💰 a todos los jugadores?')) return;
-  const { data: players } = await sb.from('players').select('id,money');
-  for (const p of players) {
-    await sb.from('players').update({ money: p.money + 5000 }).eq('id', p.id);
-  }
-  toast(`✅ 5.000 💰 dados a ${players.length} jugadores`);
-  loadAdmin();
-}
-
 sb.auth.onAuthStateChange(async (event, session) => {
   if (session?.user && !currentUser) {
     await initApp(session.user);
