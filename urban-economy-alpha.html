@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Urban Economy — Alpha</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --bg: #0a0c10;
+  --surface: #111318;
+  --surface2: #1a1e27;
+  --border: #252a36;
+  --accent: #e8c547;
+  --accent2: #4ecdc4;
+  --accent3: #ff6b6b;
+  --text: #e8eaf0;
+  --muted: #6b7280;
+  --green: #22c55e;
+  --font-display: 'Syne', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+  --font-body: 'DM Sans', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── NOISE OVERLAY ── */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 9999; opacity: 0.4;
+}
+
+/* ── AUTH SCREEN ── */
+#auth-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.auth-bg {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 50% 0%, #e8c54715 0%, transparent 70%),
+              radial-gradient(ellipse 40% 40% at 80% 80%, #4ecdc415 0%, transparent 60%);
+}
+.auth-box {
+  position: relative;
+  width: 420px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 48px;
+  clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 0 100%);
+}
+.auth-logo {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  margin-bottom: 4px;
+}
+.auth-logo span { color: var(--accent); }
+.auth-subtitle { color: var(--muted); font-size: 13px; margin-bottom: 36px; font-family: var(--font-mono); }
+.auth-tabs { display: flex; gap: 0; margin-bottom: 28px; border-bottom: 1px solid var(--border); }
+.auth-tab {
+  flex: 1; padding: 10px; text-align: center; cursor: pointer;
+  font-family: var(--font-display); font-weight: 600; font-size: 14px;
+  color: var(--muted); border-bottom: 2px solid transparent;
+  transition: all 0.2s; background: none; border-left: none; border-right: none; border-top: none;
+}
+.auth-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.form-group { margin-bottom: 18px; }
+.form-label { font-family: var(--font-mono); font-size: 11px; color: var(--muted); margin-bottom: 6px; display: block; text-transform: uppercase; letter-spacing: 1px; }
+.form-input {
+  width: 100%; background: var(--surface2); border: 1px solid var(--border);
+  color: var(--text); padding: 11px 14px; font-family: var(--font-body); font-size: 14px;
+  transition: border-color 0.2s; outline: none;
+}
+.form-input:focus { border-color: var(--accent); }
+.btn-primary {
+  width: 100%; background: var(--accent); color: #0a0c10;
+  border: none; padding: 13px; font-family: var(--font-display);
+  font-weight: 700; font-size: 14px; cursor: pointer; letter-spacing: 0.5px;
+  transition: all 0.2s; clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
+}
+.btn-primary:hover { background: #f5d060; transform: translateY(-1px); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.msg { font-size: 12px; margin-top: 12px; font-family: var(--font-mono); padding: 8px 12px; }
+.msg.error { background: #ff6b6b18; border: 1px solid #ff6b6b44; color: var(--accent3); }
+.msg.success { background: #22c55e18; border: 1px solid #22c55e44; color: var(--green); }
+
+/* ── APP SHELL ── */
+#app { display: none; min-height: 100vh; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  position: fixed; left: 0; top: 0; bottom: 0; width: 220px;
+  background: var(--surface); border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; z-index: 100;
+}
+.sidebar-logo {
+  padding: 24px 20px 20px;
+  font-family: var(--font-display); font-size: 20px; font-weight: 800;
+  border-bottom: 1px solid var(--border);
+}
+.sidebar-logo span { color: var(--accent); }
+.sidebar-tag { font-family: var(--font-mono); font-size: 9px; color: var(--accent); background: #e8c54718; padding: 2px 6px; margin-left: 6px; }
+.nav { flex: 1; padding: 12px 0; overflow-y: auto; }
+.nav-section { padding: 8px 20px 4px; font-family: var(--font-mono); font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; }
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 20px; cursor: pointer; transition: all 0.15s;
+  font-size: 13px; color: var(--muted); border-left: 2px solid transparent;
+}
+.nav-item:hover { color: var(--text); background: var(--surface2); }
+.nav-item.active { color: var(--accent); background: #e8c54710; border-left-color: var(--accent); }
+.nav-item .icon { font-size: 16px; width: 18px; text-align: center; }
+.sidebar-bottom { padding: 16px 20px; border-top: 1px solid var(--border); }
+.player-mini { display: flex; align-items: center; gap: 10px; }
+.player-avatar {
+  width: 32px; height: 32px; background: var(--accent);
+  color: #0a0c10; font-family: var(--font-display); font-weight: 800;
+  font-size: 13px; display: flex; align-items: center; justify-content: center;
+  clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%);
+}
+.player-info { flex: 1; min-width: 0; }
+.player-name { font-size: 12px; font-weight: 500; truncate: ellipsis; white-space: nowrap; overflow: hidden; }
+.player-dni { font-family: var(--font-mono); font-size: 10px; color: var(--muted); }
+.btn-logout { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 16px; transition: color 0.2s; }
+.btn-logout:hover { color: var(--accent3); }
+
+/* ── MAIN ── */
+.main { margin-left: 220px; padding: 32px; min-height: 100vh; }
+.page { display: none; }
+.page.active { display: block; }
+.page-header { margin-bottom: 28px; }
+.page-title { font-family: var(--font-display); font-size: 26px; font-weight: 800; }
+.page-sub { color: var(--muted); font-family: var(--font-mono); font-size: 11px; margin-top: 4px; }
+
+/* ── CARDS ── */
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-bottom: 28px; }
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  padding: 20px; position: relative; overflow: hidden;
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 0 100%);
+}
+.card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: var(--accent);
+}
+.card.green::before { background: var(--green); }
+.card.blue::before { background: var(--accent2); }
+.card.red::before { background: var(--accent3); }
+.card-label { font-family: var(--font-mono); font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.card-value { font-family: var(--font-display); font-size: 24px; font-weight: 700; }
+.card-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+/* ── TABLES ── */
+.table-wrap { background: var(--surface); border: 1px solid var(--border); overflow: hidden; margin-bottom: 24px; }
+.table-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.table-title { font-family: var(--font-display); font-weight: 700; font-size: 14px; }
+table { width: 100%; border-collapse: collapse; }
+th {
+  text-align: left; padding: 10px 16px;
+  font-family: var(--font-mono); font-size: 10px; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 1px;
+  background: var(--surface2); border-bottom: 1px solid var(--border);
+}
+td { padding: 11px 16px; border-bottom: 1px solid var(--border); font-size: 13px; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--surface2); }
+.badge {
+  display: inline-block; padding: 2px 8px;
+  font-family: var(--font-mono); font-size: 10px;
+  border: 1px solid; border-radius: 2px;
+}
+.badge-yellow { color: var(--accent); border-color: #e8c54744; background: #e8c54710; }
+.badge-green { color: var(--green); border-color: #22c55e44; background: #22c55e10; }
+.badge-blue { color: var(--accent2); border-color: #4ecdc444; background: #4ecdc410; }
+.badge-red { color: var(--accent3); border-color: #ff6b6b44; background: #ff6b6b10; }
+.code { font-family: var(--font-mono); font-size: 11px; color: var(--accent2); }
+
+/* ── MODAL ── */
+.modal-backdrop {
+  position: fixed; inset: 0; background: #000000cc;
+  display: none; align-items: center; justify-content: center; z-index: 1000;
+}
+.modal-backdrop.open { display: flex; }
+.modal {
+  background: var(--surface); border: 1px solid var(--border);
+  width: 500px; max-width: 95vw; max-height: 85vh; overflow-y: auto;
+  clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 0 100%);
+}
+.modal-head { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.modal-title { font-family: var(--font-display); font-weight: 700; font-size: 16px; }
+.modal-close { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 20px; }
+.modal-body { padding: 24px; }
+.modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
+.btn-sec { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 9px 18px; font-family: var(--font-display); font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.2s; }
+.btn-sec:hover { border-color: var(--muted); }
+.btn-sm { padding: 5px 12px; font-size: 11px; font-family: var(--font-mono); background: var(--surface2); border: 1px solid var(--border); color: var(--text); cursor: pointer; transition: all 0.15s; }
+.btn-sm:hover { border-color: var(--accent); color: var(--accent); }
+.btn-danger { background: #ff6b6b18; border: 1px solid #ff6b6b44; color: var(--accent3); padding: 9px 18px; font-family: var(--font-display); font-weight: 600; font-size: 13px; cursor: pointer; }
+
+/* ── MAP ── */
+.city-map {
+  background: var(--surface); border: 1px solid var(--border);
+  padding: 20px; margin-bottom: 24px;
+}
+.map-grid {
+  display: grid; grid-template-columns: repeat(10, 1fr);
+  gap: 3px; margin-top: 16px;
+}
+.plot {
+  aspect-ratio: 1; border-radius: 2px; cursor: pointer;
+  transition: all 0.15s; position: relative; border: 1px solid transparent;
+}
+.plot:hover { transform: scale(1.1); z-index: 10; border-color: var(--accent); }
+.plot.residential { background: #e8c54730; }
+.plot.commercial { background: #4ecdc430; }
+.plot.industrial { background: #6b728030; }
+.plot.government { background: #22c55e30; }
+.plot.owned { opacity: 1 !important; }
+.plot.mine { border-color: var(--accent) !important; box-shadow: 0 0 8px var(--accent)44; }
+.map-legend { display: flex; gap: 16px; margin-top: 12px; flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--muted); font-family: var(--font-mono); }
+.legend-dot { width: 10px; height: 10px; border-radius: 2px; }
+
+/* ── CONTRACT ── */
+.contract-card {
+  background: var(--surface2); border: 1px solid var(--border);
+  padding: 16px; margin-bottom: 12px;
+  border-left: 3px solid var(--accent);
+}
+.contract-card.trabajo { border-left-color: var(--green); }
+.contract-card.alquiler { border-left-color: var(--accent2); }
+.contract-card.suministro { border-left-color: var(--accent3); }
+.contract-id { font-family: var(--font-mono); font-size: 10px; color: var(--muted); }
+.contract-title { font-family: var(--font-display); font-weight: 700; font-size: 14px; margin: 4px 0; }
+.contract-parties { font-size: 12px; color: var(--muted); }
+
+/* ── TABS ── */
+.tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+.tab { padding: 10px 18px; cursor: pointer; font-family: var(--font-mono); font-size: 12px; color: var(--muted); border-bottom: 2px solid transparent; transition: all 0.2s; background: none; border-left: none; border-right: none; border-top: none; }
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* ── LOADING ── */
+.loading { text-align: center; padding: 40px; color: var(--muted); font-family: var(--font-mono); font-size: 12px; }
+.loading::after { content: ''; animation: dots 1.2s infinite; }
+@keyframes dots { 0%,100%{content:'.'} 33%{content:'..'} 66%{content:'...'} }
+
+/* ── EMPTY ── */
+.empty { text-align: center; padding: 40px; color: var(--muted); }
+.empty-icon { font-size: 36px; margin-bottom: 8px; }
+.empty-text { font-family: var(--font-mono); font-size: 12px; }
+
+/* ── SECTION ROW ── */
+.section-row { display: flex; gap: 20px; margin-bottom: 24px; }
+.section-row > * { flex: 1; }
+
+/* TOAST */
+.toast { position: fixed; bottom: 24px; right: 24px; background: var(--surface); border: 1px solid var(--border); padding: 12px 18px; font-family: var(--font-mono); font-size: 12px; z-index: 9000; transform: translateY(80px); transition: transform 0.3s; max-width: 320px; }
+.toast.show { transform: translateY(0); }
+.toast.toast-ok { border-left: 3px solid var(--green); }
+.toast.toast-err { border-left: 3px solid var(--accent3); }
+
+select.form-input { appearance: none; }
+textarea.form-input { resize: vertical; min-height: 80px; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════ AUTH ══════════════ -->
+<div id="auth-screen">
+  <div class="auth-bg"></div>
+  <div class="auth-box">
+    <div class="auth-logo">Urban<span>Economy</span></div>
+    <div class="auth-subtitle">// alpha v0.1 — ciudad en construcción</div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchAuthTab('login')">Iniciar Sesión</button>
+      <button class="auth-tab" onclick="switchAuthTab('register')">Registrarse</button>
+    </div>
+    <div id="login-form">
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-input" id="login-email" type="email" placeholder="tu@email.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Contraseña</label>
+        <input class="form-input" id="login-pass" type="password" placeholder="••••••••">
+      </div>
+      <button class="btn-primary" onclick="doLogin()">Entrar a la Ciudad →</button>
+    </div>
+    <div id="register-form" style="display:none">
+      <div class="form-group">
+        <label class="form-label">Nombre completo</label>
+        <input class="form-input" id="reg-name" type="text" placeholder="Tu nombre">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-input" id="reg-email" type="email" placeholder="tu@email.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Contraseña</label>
+        <input class="form-input" id="reg-pass" type="password" placeholder="Mínimo 6 caracteres">
+      </div>
+      <button class="btn-primary" onclick="doRegister()">Crear Ciudadano →</button>
+    </div>
+    <div id="auth-msg"></div>
+  </div>
+</div>
+
+<!-- ══════════════ APP ══════════════ -->
+<div id="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">Urban<span>Eco</span><span class="sidebar-tag">ALPHA</span></div>
+    <nav class="nav">
+      <div class="nav-section">Ciudad</div>
+      <div class="nav-item active" onclick="goPage('dashboard')"><span class="icon">🏠</span> Dashboard</div>
+      <div class="nav-item" onclick="goPage('map')"><span class="icon">🗺️</span> Mapa Ciudad</div>
+      <div class="nav-section">Economía</div>
+      <div class="nav-item" onclick="goPage('market')"><span class="icon">🏪</span> Mercado</div>
+      <div class="nav-item" onclick="goPage('jobs')"><span class="icon">💼</span> Empleos</div>
+      <div class="nav-section">Mis Activos</div>
+      <div class="nav-item" onclick="goPage('companies')"><span class="icon">🏭</span> Mis Empresas</div>
+      <div class="nav-item" onclick="goPage('properties')"><span class="icon">🏢</span> Propiedades</div>
+      <div class="nav-item" onclick="goPage('contracts')"><span class="icon">📄</span> Contratos</div>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="player-mini">
+        <div class="player-avatar" id="sidebar-avatar">?</div>
+        <div class="player-info">
+          <div class="player-name" id="sidebar-name">Cargando...</div>
+          <div class="player-dni" id="sidebar-dni">DNI-...</div>
+        </div>
+        <button class="btn-logout" onclick="doLogout()" title="Salir">⏻</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- ── DASHBOARD ── -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-header">
+        <div class="page-title">Dashboard</div>
+        <div class="page-sub" id="dash-greeting">// bienvenido de vuelta</div>
+      </div>
+      <div class="cards" id="dash-cards">
+        <div class="card"><div class="card-label">Saldo</div><div class="card-value" id="dc-money">–</div><div class="card-sub">monedas disponibles</div></div>
+        <div class="card green"><div class="card-label">DNI</div><div class="card-value" style="font-size:16px;font-family:var(--font-mono)" id="dc-dni">–</div><div class="card-sub">documento nacional</div></div>
+        <div class="card blue"><div class="card-label">Empleo</div><div class="card-value" style="font-size:16px" id="dc-job">–</div><div class="card-sub">situación laboral</div></div>
+        <div class="card red"><div class="card-label">Empresas</div><div class="card-value" id="dc-companies">–</div><div class="card-sub">negocios activos</div></div>
+      </div>
+      <div class="section-row">
+        <div class="table-wrap">
+          <div class="table-header"><span class="table-title">Últimas Transacciones</span></div>
+          <div id="dash-transactions"><div class="loading">Cargando</div></div>
+        </div>
+        <div class="table-wrap">
+          <div class="table-header"><span class="table-title">Mis Contratos Activos</span></div>
+          <div id="dash-contracts-preview"><div class="loading">Cargando</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── MAPA ── -->
+    <div class="page" id="page-map">
+      <div class="page-header">
+        <div class="page-title">Mapa de la Ciudad</div>
+        <div class="page-sub">// haz clic en una parcela para ver detalles o comprarla</div>
+      </div>
+      <div class="city-map">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-family:var(--font-display);font-weight:700">Ciudad Alpha — Servidor #001</span>
+          <span style="font-family:var(--font-mono);font-size:11px;color:var(--muted)">100 parcelas · 10×10</span>
+        </div>
+        <div class="map-grid" id="map-grid"></div>
+        <div class="map-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:#e8c54730;border:1px solid #e8c547"></div>Residencial</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#4ecdc430;border:1px solid #4ecdc4"></div>Comercial</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#6b728030;border:1px solid #6b7280"></div>Industrial</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#22c55e30;border:1px solid #22c55e"></div>Gubernamental</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--accent);"></div>Tu parcela</div>
+        </div>
+      </div>
+      <div id="plot-detail"></div>
+    </div>
+
+    <!-- ── MERCADO ── -->
+    <div class="page" id="page-market">
+      <div class="page-header">
+        <div class="page-title">Mercado</div>
+        <div class="page-sub">// compra y vende recursos con otros jugadores</div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <div class="tabs" style="margin:0;border:none">
+          <button class="tab active" onclick="switchMarketTab('buy')">Comprar</button>
+          <button class="tab" onclick="switchMarketTab('sell')">Vender</button>
+        </div>
+        <button class="btn-sm" onclick="openModal('modal-new-listing')" style="border-color:var(--accent);color:var(--accent)">+ Nueva oferta</button>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <span class="table-title">Ofertas activas</span>
+          <input class="form-input" id="market-search" placeholder="Buscar producto..." style="width:200px;padding:6px 10px;font-size:12px" oninput="filterMarket()">
+        </div>
+        <div id="market-list"><div class="loading">Cargando</div></div>
+      </div>
+    </div>
+
+    <!-- ── EMPLEOS ── -->
+    <div class="page" id="page-jobs">
+      <div class="page-header">
+        <div class="page-title">Bolsa de Empleo</div>
+        <div class="page-sub">// encuentra trabajo o publica ofertas para tu empresa</div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;margin-bottom:16px">
+        <button class="btn-sm" onclick="openModal('modal-new-job')" style="border-color:var(--green);color:var(--green)">+ Publicar oferta</button>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header"><span class="table-title">Ofertas de empleo</span></div>
+        <div id="jobs-list"><div class="loading">Cargando</div></div>
+      </div>
+    </div>
+
+    <!-- ── EMPRESAS ── -->
+    <div class="page" id="page-companies">
+      <div class="page-header">
+        <div class="page-title">Mis Empresas</div>
+        <div class="page-sub">// gestiona tus negocios</div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;margin-bottom:16px">
+        <button class="btn-sm" onclick="openModal('modal-new-company')" style="border-color:var(--accent);color:var(--accent)">+ Fundar empresa</button>
+      </div>
+      <div id="companies-list"><div class="loading">Cargando</div></div>
+    </div>
+
+    <!-- ── PROPIEDADES ── -->
+    <div class="page" id="page-properties">
+      <div class="page-header">
+        <div class="page-title">Mis Propiedades</div>
+        <div class="page-sub">// terrenos, edificios e inmuebles</div>
+      </div>
+      <div id="properties-list"><div class="loading">Cargando</div></div>
+    </div>
+
+    <!-- ── CONTRATOS ── -->
+    <div class="page" id="page-contracts">
+      <div class="page-header">
+        <div class="page-title">Contratos</div>
+        <div class="page-sub">// acuerdos legales de trabajo, alquiler y suministro</div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;margin-bottom:16px">
+        <button class="btn-sm" onclick="openModal('modal-new-contract')" style="border-color:var(--accent2);color:var(--accent2)">+ Nuevo contrato</button>
+      </div>
+      <div id="contracts-list"><div class="loading">Cargando</div></div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ══════════════ MODALS ══════════════ -->
+
+<!-- Nueva oferta de mercado -->
+<div class="modal-backdrop" id="modal-new-listing">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="modal-title">Nueva Oferta de Mercado</span>
+      <button class="modal-close" onclick="closeModal('modal-new-listing')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Producto / Recurso</label><input class="form-input" id="lst-product" placeholder="Ej: Ladrillos, Madera, Pan..."></div>
+      <div class="form-group"><label class="form-label">Categoría</label>
+        <select class="form-input" id="lst-category">
+          <option>Materiales construcción</option><option>Alimentación</option><option>Manufactura</option>
+          <option>Servicios</option><option>Tecnología</option><option>Transporte</option><option>Otro</option>
+        </select>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="form-group"><label class="form-label">Cantidad</label><input class="form-input" id="lst-qty" type="number" min="1" value="100"></div>
+        <div class="form-group"><label class="form-label">Precio unitario (💰)</label><input class="form-input" id="lst-price" type="number" min="1" value="10"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Descripción</label><textarea class="form-input" id="lst-desc" placeholder="Detalles del producto..."></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-sec" onclick="closeModal('modal-new-listing')">Cancelar</button>
+      <button class="btn-primary" style="width:auto;clip-path:none" onclick="createListing()">Publicar oferta</button>
+    </div>
+  </div>
+</div>
+
+<!-- Nueva empresa -->
+<div class="modal-backdrop" id="modal-new-company">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="modal-title">Fundar Nueva Empresa</span>
+      <button class="modal-close" onclick="closeModal('modal-new-company')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Nombre de la empresa</label><input class="form-input" id="co-name" placeholder="Ej: Ladrillos García S.L."></div>
+      <div class="form-group"><label class="form-label">Tipo de negocio</label>
+        <select class="form-input" id="co-type">
+          <option value="construccion">🏗️ Construcción</option>
+          <option value="manufactura">🏭 Manufactura</option>
+          <option value="comercio">🛒 Comercio</option>
+          <option value="alimentacion">🍞 Alimentación</option>
+          <option value="servicios">💼 Servicios</option>
+          <option value="transporte">🚛 Transporte</option>
+          <option value="inmobiliaria">🏢 Inmobiliaria</option>
+          <option value="banca">🏦 Banca</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Zona requerida</label>
+        <select class="form-input" id="co-zone">
+          <option value="commercial">Comercial</option>
+          <option value="industrial">Industrial</option>
+          <option value="residential">Residencial</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Capital inicial (💰)</label><input class="form-input" id="co-capital" type="number" min="500" value="1000"></div>
+      <div class="form-group"><label class="form-label">Descripción</label><textarea class="form-input" id="co-desc" placeholder="¿Qué hace tu empresa?"></textarea></div>
+      <div style="background:var(--surface2);padding:12px;border:1px solid var(--border);font-family:var(--font-mono);font-size:11px;color:var(--muted)">
+        ⚠️ Fundar una empresa tiene un coste de licencia de <strong style="color:var(--accent)">500 💰</strong>. El código de empresa se genera automáticamente.
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-sec" onclick="closeModal('modal-new-company')">Cancelar</button>
+      <button class="btn-primary" style="width:auto;clip-path:none" onclick="createCompany()">Fundar empresa (–500 💰)</button>
+    </div>
+  </div>
+</div>
+
+<!-- Nueva oferta de empleo -->
+<div class="modal-backdrop" id="modal-new-job">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="modal-title">Publicar Oferta de Empleo</span>
+      <button class="modal-close" onclick="closeModal('modal-new-job')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Empresa contratante</label>
+        <select class="form-input" id="job-company">
+          <option value="">Selecciona tu empresa...</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Puesto / Profesión</label><input class="form-input" id="job-title" placeholder="Ej: Operario de fábrica, Contable, Repartidor..."></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="form-group"><label class="form-label">Salario mensual (💰)</label><input class="form-input" id="job-salary" type="number" min="100" value="500"></div>
+        <div class="form-group"><label class="form-label">Vacantes</label><input class="form-input" id="job-slots" type="number" min="1" value="1"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Descripción del puesto</label><textarea class="form-input" id="job-desc" placeholder="Requisitos y funciones..."></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-sec" onclick="closeModal('modal-new-job')">Cancelar</button>
+      <button class="btn-primary" style="width:auto;clip-path:none" onclick="createJob()">Publicar oferta</button>
+    </div>
+  </div>
+</div>
+
+<!-- Nuevo contrato -->
+<div class="modal-backdrop" id="modal-new-contract">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="modal-title">Crear Nuevo Contrato</span>
+      <button class="modal-close" onclick="closeModal('modal-new-contract')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Tipo de contrato</label>
+        <select class="form-input" id="ct-type" onchange="updateContractFields()">
+          <option value="trabajo">💼 Contrato de trabajo</option>
+          <option value="alquiler">🏠 Contrato de alquiler</option>
+          <option value="suministro">📦 Contrato de suministro</option>
+          <option value="banco">🏦 Contrato bancario (crédito)</option>
+          <option value="compraventa">🤝 Compraventa</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">DNI / Código de la otra parte</label><input class="form-input" id="ct-party" placeholder="DNI-XXXXXXXX o COD-EMPRESA..."></div>
+      <div class="form-group"><label class="form-label">Valor del contrato (💰)</label><input class="form-input" id="ct-value" type="number" min="0" value="1000"></div>
+      <div class="form-group"><label class="form-label">Duración</label>
+        <select class="form-input" id="ct-duration">
+          <option value="1m">1 mes</option><option value="3m">3 meses</option>
+          <option value="6m">6 meses</option><option value="1y">1 año</option>
+          <option value="indefinido">Indefinido</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Condiciones y cláusulas</label><textarea class="form-input" id="ct-terms" placeholder="Describe las condiciones del contrato..." style="min-height:100px"></textarea></div>
+      <div style="background:var(--surface2);padding:12px;border:1px solid var(--border);font-family:var(--font-mono);font-size:11px;color:var(--muted)">
+        📋 El contrato queda pendiente hasta que la otra parte lo firme. El código de contrato se genera automáticamente.
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-sec" onclick="closeModal('modal-new-contract')">Cancelar</button>
+      <button class="btn-primary" style="width:auto;clip-path:none" onclick="createContract()">Crear contrato</button>
+    </div>
+  </div>
+</div>
+
+<!-- Plot detail modal -->
+<div class="modal-backdrop" id="modal-plot">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="modal-title" id="plot-modal-title">Parcela</span>
+      <button class="modal-close" onclick="closeModal('modal-plot')">×</button>
+    </div>
+    <div class="modal-body" id="plot-modal-body"></div>
+    <div class="modal-footer" id="plot-modal-footer"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════════
+//  SUPABASE INIT
+// ══════════════════════════════════════════════════
+const SUPA_URL = 'https://kkxfyuzqokxikwpnmnlr.supabase.co';
+const SUPA_KEY = 'sb_publishable_YeS_1Z12wJDfP0MpsAomlQ_c8vNbJwc';
+const { createClient } = supabase;
+const sb = createClient(SUPA_URL, SUPA_KEY);
+
+let currentUser = null;
+let playerData = null;
+let allPlots = [];
+let allListings = [];
+let marketTab = 'buy';
+
+// ══════════════════════════════════════════════════
+//  HELPERS
+// ══════════════════════════════════════════════════
+function genCode(prefix, len = 8) {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let r = prefix + '-';
+  for (let i = 0; i < len; i++) r += chars[Math.floor(Math.random() * chars.length)];
+  return r;
+}
+
+function toast(msg, ok = true) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + (ok ? 'toast-ok' : 'toast-err');
+  setTimeout(() => t.className = 'toast', 3000);
+}
+
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function goPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  document.querySelector(`[onclick="goPage('${name}')"]`).classList.add('active');
+  loadPage(name);
+}
+
+function fmt(n) { return Number(n).toLocaleString('es-ES'); }
+
+// ══════════════════════════════════════════════════
+//  AUTH
+// ══════════════════════════════════════════════════
+function switchAuthTab(tab) {
+  document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('login-form').style.display = tab === 'login' ? 'block' : 'none';
+  document.getElementById('register-form').style.display = tab === 'register' ? 'block' : 'none';
+  document.getElementById('auth-msg').innerHTML = '';
+}
+
+function showAuthMsg(msg, ok) {
+  document.getElementById('auth-msg').innerHTML = `<div class="msg ${ok ? 'success' : 'error'}">${msg}</div>`;
+}
+
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass = document.getElementById('login-pass').value;
+  if (!email || !pass) return showAuthMsg('Completa todos los campos', false);
+  const btn = event.target; btn.disabled = true; btn.textContent = 'Entrando...';
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+  btn.disabled = false; btn.textContent = 'Entrar a la Ciudad →';
+  if (error) return showAuthMsg(error.message, false);
+  await initApp(data.user);
+}
+
+async function doRegister() {
+  const name = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const pass = document.getElementById('reg-pass').value;
+  if (!name || !email || !pass) return showAuthMsg('Completa todos los campos', false);
+  if (pass.length < 6) return showAuthMsg('La contraseña debe tener al menos 6 caracteres', false);
+  const btn = event.target; btn.disabled = true; btn.textContent = 'Creando ciudadano...';
+  const { data, error } = await sb.auth.signUp({ email, password: pass });
+  btn.disabled = false; btn.textContent = 'Crear Ciudadano →';
+  if (error) return showAuthMsg(error.message, false);
+
+  // Create player profile
+  const dni = genCode('DNI');
+  const { error: pe } = await sb.from('players').insert({
+    id: data.user.id, name, email, dni,
+    money: 1500, job_status: 'Desempleado', address: null, registered_at: new Date().toISOString()
+  });
+  if (pe) return showAuthMsg('Error creando perfil: ' + pe.message, false);
+
+  // Generate initial plots for the city (only if first user)
+  showAuthMsg('¡Ciudadano creado! Revisa tu email para confirmar.', true);
+}
+
+async function doLogout() {
+  await sb.auth.signOut();
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('auth-screen').style.display = 'flex';
+  currentUser = null; playerData = null;
+}
+
+// ══════════════════════════════════════════════════
+//  APP INIT
+// ══════════════════════════════════════════════════
+async function initApp(user) {
+  currentUser = user;
+  const { data: p } = await sb.from('players').select('*').eq('id', user.id).single();
+  playerData = p;
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  updateSidebar();
+  await ensureCityPlots();
+  loadPage('dashboard');
+}
+
+function updateSidebar() {
+  if (!playerData) return;
+  const initials = playerData.name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+  document.getElementById('sidebar-avatar').textContent = initials;
+  document.getElementById('sidebar-name').textContent = playerData.name;
+  document.getElementById('sidebar-dni').textContent = playerData.dni;
+}
+
+async function ensureCityPlots() {
+  const { count } = await sb.from('plots').select('*', { count: 'exact', head: true });
+  if (count > 0) return;
+  // Generate 100 plots for the city
+  const zones = ['residential','residential','residential','commercial','commercial','industrial','industrial','government'];
+  const plots = [];
+  for (let r = 0; r < 10; r++) {
+    for (let c = 0; c < 10; c++) {
+      const idx = r * 10 + c;
+      let zone;
+      if (r < 2) zone = 'government';
+      else if (r < 5 && c < 5) zone = 'commercial';
+      else if (r >= 7) zone = 'industrial';
+      else zone = 'residential';
+      const basePrice = zone === 'commercial' ? 5000 : zone === 'industrial' ? 3000 : zone === 'government' ? 0 : 2000;
+      plots.push({ code: genCode('PLT', 6), row: r, col: c, zone, owner_id: null, price: basePrice, for_sale: zone !== 'government', building: null });
+    }
+  }
+  await sb.from('plots').insert(plots);
+}
+
+// ══════════════════════════════════════════════════
+//  PAGE LOADER
+// ══════════════════════════════════════════════════
+function loadPage(name) {
+  const loaders = { dashboard: loadDashboard, map: loadMap, market: loadMarket, jobs: loadJobs, companies: loadCompanies, properties: loadProperties, contracts: loadContracts };
+  if (loaders[name]) loaders[name]();
+}
+
+// ══════════════════════════════════════════════════
+//  DASHBOARD
+// ══════════════════════════════════════════════════
+async function loadDashboard() {
+  // Refresh player data
+  const { data: p } = await sb.from('players').select('*').eq('id', currentUser.id).single();
+  playerData = p;
+  document.getElementById('dc-money').textContent = '💰 ' + fmt(p.money);
+  document.getElementById('dc-dni').textContent = p.dni;
+  document.getElementById('dc-job').textContent = p.job_status || 'Desempleado';
+  document.getElementById('dash-greeting').textContent = `// bienvenido, ${p.name.split(' ')[0]}`;
+
+  // Company count
+  const { count: cc } = await sb.from('companies').select('*', { count: 'exact', head: true }).eq('owner_id', currentUser.id);
+  document.getElementById('dc-companies').textContent = cc || 0;
+
+  // Transactions (market activity)
+  const { data: txs } = await sb.from('market_listings').select('*').or(`seller_id.eq.${currentUser.id},buyer_id.eq.${currentUser.id}`).order('created_at', { ascending: false }).limit(5);
+  const txEl = document.getElementById('dash-transactions');
+  if (!txs || txs.length === 0) {
+    txEl.innerHTML = '<div class="empty"><div class="empty-icon">💸</div><div class="empty-text">Sin transacciones aún</div></div>';
+  } else {
+    txEl.innerHTML = `<table><thead><tr><th>Producto</th><th>Precio</th><th>Estado</th></tr></thead><tbody>${txs.map(t => `<tr><td>${t.product}</td><td>💰 ${fmt(t.price)}</td><td><span class="badge badge-${t.status==='active'?'green':'yellow'}">${t.status}</span></td></tr>`).join('')}</tbody></table>`;
+  }
+
+  // Contracts preview
+  const { data: cts } = await sb.from('contracts').select('*').or(`party_a.eq.${currentUser.id},party_b_code.eq.${playerData.dni}`).eq('status', 'activo').limit(3);
+  const ctEl = document.getElementById('dash-contracts-preview');
+  if (!cts || cts.length === 0) {
+    ctEl.innerHTML = '<div class="empty"><div class="empty-icon">📄</div><div class="empty-text">Sin contratos activos</div></div>';
+  } else {
+    ctEl.innerHTML = cts.map(c => `<div style="padding:12px 16px;border-bottom:1px solid var(--border)"><div class="code">${c.code}</div><div style="font-size:13px;margin:2px 0">${c.type}</div><div style="font-size:11px;color:var(--muted)">💰 ${fmt(c.value)} · ${c.duration}</div></div>`).join('');
+  }
+}
+
+// ══════════════════════════════════════════════════
+//  MAP
+// ══════════════════════════════════════════════════
+async function loadMap() {
+  const { data: plots } = await sb.from('plots').select('*').order('row').order('col');
+  allPlots = plots || [];
+  renderMap();
+}
+
+function renderMap() {
+  const grid = document.getElementById('map-grid');
+  grid.innerHTML = allPlots.map(p => {
+    const ismine = p.owner_id === currentUser.id;
+    return `<div class="plot ${p.zone}${ismine ? ' mine' : ''}" title="${p.code} · ${p.zone} · 💰${fmt(p.price)}" onclick="showPlot('${p.code}')"></div>`;
+  }).join('');
+}
+
+function showPlot(code) {
+  const p = allPlots.find(x => x.code === code);
+  if (!p) return;
+  const ismine = p.owner_id === currentUser.id;
+  const isGov = p.zone === 'government';
+  document.getElementById('plot-modal-title').textContent = `Parcela ${p.code}`;
+  document.getElementById('plot-modal-body').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+      <div><div class="card-label">Código</div><div class="code">${p.code}</div></div>
+      <div><div class="card-label">Zona</div><span class="badge badge-${p.zone==='commercial'?'blue':p.zone==='industrial'?'red':p.zone==='government'?'green':'yellow'}">${p.zone}</span></div>
+      <div><div class="card-label">Precio</div><div style="font-family:var(--font-display);font-weight:700">💰 ${fmt(p.price)}</div></div>
+      <div><div class="card-label">Estado</div><span class="badge badge-${ismine?'yellow':p.for_sale?'green':'red'}">${ismine?'Tuyo':p.for_sale?'En venta':'No disponible'}</span></div>
+    </div>
+    ${p.building ? `<div style="background:var(--surface2);padding:12px;border:1px solid var(--border);font-size:12px"><strong>Edificio:</strong> ${p.building}</div>` : ''}
+    ${isGov ? '<div class="msg" style="background:var(--surface2);color:var(--muted);border:1px solid var(--border)">🏛️ Parcela gubernamental — no disponible para compra privada</div>' : ''}
+  `;
+  document.getElementById('plot-modal-footer').innerHTML = isGov ? '' :
+    ismine ? `<button class="btn-sm" onclick="sellPlot('${p.code}')">Poner en venta</button><button class="modal-close btn-sec" onclick="closeModal('modal-plot')">Cerrar</button>` :
+    p.for_sale ? `<button class="btn-sec" onclick="closeModal('modal-plot')">Cancelar</button><button class="btn-primary" style="width:auto;clip-path:none" onclick="buyPlot('${p.code}')">Comprar parcela (💰 ${fmt(p.price)})</button>` :
+    `<button class="btn-sec" onclick="closeModal('modal-plot')">Cerrar</button>`;
+  openModal('modal-plot');
+}
+
+async function buyPlot(code) {
+  const p = allPlots.find(x => x.code === code);
+  if (!p) return;
+  if (playerData.money < p.price) return toast('No tienes suficiente dinero', false);
+  const { error } = await sb.from('plots').update({ owner_id: currentUser.id, for_sale: false }).eq('code', code);
+  if (error) return toast('Error al comprar: ' + error.message, false);
+  await sb.from('players').update({ money: playerData.money - p.price }).eq('id', currentUser.id);
+  playerData.money -= p.price;
+  closeModal('modal-plot');
+  toast(`✅ Parcela ${code} comprada`);
+  await loadMap();
+}
+
+async function sellPlot(code) {
+  await sb.from('plots').update({ for_sale: true }).eq('code', code);
+  closeModal('modal-plot');
+  toast('Parcela puesta en venta');
+  await loadMap();
+}
+
+// ══════════════════════════════════════════════════
+//  MARKET
+// ══════════════════════════════════════════════════
+async function loadMarket() {
+  const { data } = await sb.from('market_listings').select('*, players(name, dni)').eq('status', 'active').order('created_at', { ascending: false });
+  allListings = data || [];
+  renderMarket();
+}
+
+function switchMarketTab(tab) {
+  marketTab = tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  renderMarket();
+}
+
+function filterMarket() { renderMarket(); }
+
+function renderMarket() {
+  const search = document.getElementById('market-search')?.value?.toLowerCase() || '';
+  let listings = allListings;
+  if (marketTab === 'sell') listings = listings.filter(l => l.seller_id === currentUser.id);
+  if (search) listings = listings.filter(l => l.product.toLowerCase().includes(search) || l.category.toLowerCase().includes(search));
+  const el = document.getElementById('market-list');
+  if (!listings.length) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">🏪</div><div class="empty-text">No hay ofertas activas</div></div>';
+    return;
+  }
+  el.innerHTML = `<table>
+    <thead><tr><th>Código</th><th>Producto</th><th>Categoría</th><th>Cantidad</th><th>Precio unit.</th><th>Vendedor</th><th></th></tr></thead>
+    <tbody>${listings.map(l => `<tr>
+      <td><span class="code">${l.code}</span></td>
+      <td><strong>${l.product}</strong></td>
+      <td><span class="badge badge-blue">${l.category}</span></td>
+      <td>${fmt(l.quantity)} u.</td>
+      <td>💰 ${fmt(l.price)}</td>
+      <td style="font-size:11px;color:var(--muted)">${l.players?.name || '–'}</td>
+      <td>${l.seller_id !== currentUser.id ? `<button class="btn-sm" onclick="buyListing('${l.id}')">Comprar</button>` : '<span style="font-size:11px;color:var(--muted)">Tu oferta</span>'}</td>
+    </tr>`).join('')}</tbody>
+  </table>`;
+}
+
+async function createListing() {
+  const product = document.getElementById('lst-product').value.trim();
+  const category = document.getElementById('lst-category').value;
+  const qty = parseInt(document.getElementById('lst-qty').value);
+  const price = parseInt(document.getElementById('lst-price').value);
+  const desc = document.getElementById('lst-desc').value.trim();
+  if (!product || !qty || !price) return toast('Completa los campos obligatorios', false);
+  const { error } = await sb.from('market_listings').insert({ code: genCode('MKT'), product, category, quantity: qty, price, description: desc, seller_id: currentUser.id, status: 'active', buyer_id: null });
+  if (error) return toast('Error: ' + error.message, false);
+  closeModal('modal-new-listing');
+  toast('✅ Oferta publicada en el mercado');
+  loadMarket();
+}
+
+async function buyListing(id) {
+  const l = allListings.find(x => x.id === id);
+  if (!l) return;
+  const total = l.price * l.quantity;
+  if (!confirm(`¿Comprar ${l.quantity} unidades de "${l.product}" por 💰 ${fmt(total)}?`)) return;
+  if (playerData.money < total) return toast('No tienes suficiente dinero', false);
+  await sb.from('market_listings').update({ status: 'sold', buyer_id: currentUser.id }).eq('id', id);
+  await sb.from('players').update({ money: playerData.money - total }).eq('id', currentUser.id);
+  playerData.money -= total;
+  toast(`✅ Compra realizada: ${l.product}`);
+  loadMarket();
+}
+
+// ══════════════════════════════════════════════════
+//  JOBS
+// ══════════════════════════════════════════════════
+async function loadJobs() {
+  const { data } = await sb.from('job_listings').select('*, companies(name, code, type)').eq('status', 'open').order('created_at', { ascending: false });
+  const el = document.getElementById('jobs-list');
+  if (!data || !data.length) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">💼</div><div class="empty-text">No hay ofertas de empleo activas</div></div>';
+    return;
+  }
+  el.innerHTML = `<table>
+    <thead><tr><th>Código</th><th>Puesto</th><th>Empresa</th><th>Salario/mes</th><th>Vacantes</th><th></th></tr></thead>
+    <tbody>${data.map(j => `<tr>
+      <td><span class="code">${j.code}</span></td>
+      <td><strong>${j.title}</strong></td>
+      <td><span class="badge badge-blue">${j.companies?.name || '–'}</span></td>
+      <td>💰 ${fmt(j.salary)}</td>
+      <td>${j.slots}</td>
+      <td><button class="btn-sm" onclick="applyJob('${j.id}')">Solicitar</button></td>
+    </tr>`).join('')}</tbody>
+  </table>`;
+}
+
+async function createJob() {
+  const company_id = document.getElementById('job-company').value;
+  const title = document.getElementById('job-title').value.trim();
+  const salary = parseInt(document.getElementById('job-salary').value);
+  const slots = parseInt(document.getElementById('job-slots').value);
+  const desc = document.getElementById('job-desc').value.trim();
+  if (!company_id || !title || !salary) return toast('Completa todos los campos', false);
+  const { error } = await sb.from('job_listings').insert({ code: genCode('JOB'), company_id, title, salary, slots, description: desc, status: 'open' });
+  if (error) return toast('Error: ' + error.message, false);
+  closeModal('modal-new-job');
+  toast('✅ Oferta de empleo publicada');
+  loadJobs();
+}
+
+async function applyJob(id) {
+  const { data: j } = await sb.from('job_listings').select('*, companies(name)').eq('id', id).single();
+  if (!j) return;
+  // Create a work contract automatically
+  const { error } = await sb.from('contracts').insert({
+    code: genCode('CTR'), type: 'trabajo', party_a: currentUser.id,
+    party_b_code: j.code, value: j.salary, duration: 'indefinido',
+    terms: `Contrato de trabajo para el puesto "${j.title}" en ${j.companies?.name}. Salario: 💰${fmt(j.salary)}/mes.`,
+    status: 'pendiente'
+  });
+  if (error) return toast('Error: ' + error.message, false);
+  await sb.from('players').update({ job_status: j.title }).eq('id', currentUser.id);
+  toast('✅ Solicitud enviada. Contrato creado — pendiente de firma');
+  loadJobs();
+}
+
+// ══════════════════════════════════════════════════
+//  COMPANIES
+// ══════════════════════════════════════════════════
+async function loadCompanies() {
+  const { data } = await sb.from('companies').select('*').eq('owner_id', currentUser.id).order('created_at', { ascending: false });
+  const el = document.getElementById('companies-list');
+  if (!data || !data.length) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">🏭</div><div class="empty-text">No tienes empresas todavía<br><span style="font-size:11px">Funda tu primera empresa para empezar</span></div></div>';
+    return;
+  }
+  el.innerHTML = data.map(c => `
+    <div class="table-wrap" style="margin-bottom:16px">
+      <div class="table-header">
+        <div>
+          <div class="table-title">${c.name}</div>
+          <div style="display:flex;gap:8px;margin-top:4px">
+            <span class="code">${c.code}</span>
+            <span class="badge badge-blue">${c.type}</span>
+            <span class="badge badge-${c.status==='activa'?'green':'red'}">${c.status}</span>
+          </div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-family:var(--font-display);font-weight:700;font-size:20px">💰 ${fmt(c.capital)}</div>
+          <div style="font-size:11px;color:var(--muted)">capital</div>
+        </div>
+      </div>
+      <div style="padding:14px 20px;font-size:13px;color:var(--muted)">${c.description || 'Sin descripción'}</div>
+      <div style="padding:10px 20px;border-top:1px solid var(--border);display:flex;gap:8px">
+        <button class="btn-sm" onclick="openModal('modal-new-job')">+ Publicar empleo</button>
+        <button class="btn-sm" onclick="openModal('modal-new-listing')">+ Vender producto</button>
+        <button class="btn-sm" onclick="openModal('modal-new-contract')">+ Contrato suministro</button>
+      </div>
+    </div>
+  `).join('');
+
+  // Populate job company selector
+  const sel = document.getElementById('job-company');
+  sel.innerHTML = '<option value="">Selecciona tu empresa...</option>' + data.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+}
+
+async function createCompany() {
+  const name = document.getElementById('co-name').value.trim();
+  const type = document.getElementById('co-type').value;
+  const zone = document.getElementById('co-zone').value;
+  const capital = parseInt(document.getElementById('co-capital').value);
+  const desc = document.getElementById('co-desc').value.trim();
+  if (!name || !type || !capital) return toast('Completa todos los campos', false);
+  if (playerData.money < 500) return toast('No tienes suficiente dinero para la licencia (500 💰)', false);
+  const types = { construccion:'CON', manufactura:'MAN', comercio:'COM', alimentacion:'ALI', servicios:'SER', transporte:'TRA', inmobiliaria:'INM', banca:'BAN' };
+  const prefix = types[type] || 'EMP';
+  const { error } = await sb.from('companies').insert({ code: genCode(prefix), name, type, zone, capital, description: desc, owner_id: currentUser.id, status: 'activa' });
+  if (error) return toast('Error: ' + error.message, false);
+  await sb.from('players').update({ money: playerData.money - 500 }).eq('id', currentUser.id);
+  playerData.money -= 500;
+  closeModal('modal-new-company');
+  toast('✅ ¡Empresa fundada! Licencia registrada');
+  loadCompanies();
+}
+
+// ══════════════════════════════════════════════════
+//  PROPERTIES
+// ══════════════════════════════════════════════════
+async function loadProperties() {
+  const { data: plots } = await sb.from('plots').select('*').eq('owner_id', currentUser.id);
+  const el = document.getElementById('properties-list');
+  if (!plots || !plots.length) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">🏢</div><div class="empty-text">No tienes propiedades<br><span style="font-size:11px">Compra parcelas en el mapa de la ciudad</span></div></div>';
+    return;
+  }
+  el.innerHTML = `<div class="table-wrap">
+    <div class="table-header"><span class="table-title">Mis Parcelas (${plots.length})</span></div>
+    <table>
+      <thead><tr><th>Código</th><th>Zona</th><th>Posición</th><th>Valor</th><th>Edificio</th><th>Estado</th></tr></thead>
+      <tbody>${plots.map(p => `<tr>
+        <td><span class="code">${p.code}</span></td>
+        <td><span class="badge badge-${p.zone==='commercial'?'blue':p.zone==='industrial'?'red':'yellow'}">${p.zone}</span></td>
+        <td style="font-family:var(--font-mono);font-size:11px">[${p.row},${p.col}]</td>
+        <td>💰 ${fmt(p.price)}</td>
+        <td>${p.building || '<span style="color:var(--muted)">Vacía</span>'}</td>
+        <td><span class="badge badge-${p.for_sale?'green':'yellow'}">${p.for_sale?'En venta':'Privada'}</span></td>
+      </tr>`).join('')}</tbody>
+    </table>
+  </div>`;
+}
+
+// ══════════════════════════════════════════════════
+//  CONTRACTS
+// ══════════════════════════════════════════════════
+async function loadContracts() {
+  const { data } = await sb.from('contracts').select('*').or(`party_a.eq.${currentUser.id},party_b_code.eq.${playerData?.dni}`).order('created_at', { ascending: false });
+  const el = document.getElementById('contracts-list');
+  if (!data || !data.length) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">📄</div><div class="empty-text">No tienes contratos<br><span style="font-size:11px">Crea contratos de trabajo, alquiler o suministro</span></div></div>';
+    return;
+  }
+  const typeColors = { trabajo: 'green', alquiler: 'blue', suministro: 'yellow', banco: 'red', compraventa: 'blue' };
+  el.innerHTML = data.map(c => `
+    <div class="contract-card ${c.type}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <div class="contract-id">${c.code}</div>
+          <div class="contract-title">${c.type.toUpperCase()} — 💰 ${fmt(c.value)}</div>
+          <div class="contract-parties">Contraparte: <span class="code">${c.party_b_code}</span> · Duración: ${c.duration}</div>
+        </div>
+        <span class="badge badge-${c.status==='activo'?'green':c.status==='pendiente'?'yellow':'red'}">${c.status}</span>
+      </div>
+      ${c.terms ? `<div style="margin-top:8px;font-size:11px;color:var(--muted);padding:8px;background:var(--bg);border:1px solid var(--border)">${c.terms}</div>` : ''}
+      ${c.status === 'pendiente' && c.party_b_code === playerData?.dni ? `<div style="margin-top:8px"><button class="btn-sm" style="border-color:var(--green);color:var(--green)" onclick="signContract('${c.id}')">✍️ Firmar contrato</button></div>` : ''}
+    </div>
+  `).join('');
+}
+
+async function createContract() {
+  const type = document.getElementById('ct-type').value;
+  const party = document.getElementById('ct-party').value.trim();
+  const value = parseInt(document.getElementById('ct-value').value);
+  const duration = document.getElementById('ct-duration').value;
+  const terms = document.getElementById('ct-terms').value.trim();
+  if (!party || !value || !terms) return toast('Completa todos los campos', false);
+  const { error } = await sb.from('contracts').insert({ code: genCode('CTR'), type, party_a: currentUser.id, party_b_code: party, value, duration, terms, status: 'pendiente' });
+  if (error) return toast('Error: ' + error.message, false);
+  closeModal('modal-new-contract');
+  toast('✅ Contrato creado — pendiente de firma de la otra parte');
+  loadContracts();
+}
+
+async function signContract(id) {
+  await sb.from('contracts').update({ status: 'activo' }).eq('id', id);
+  toast('✅ Contrato firmado y activo');
+  loadContracts();
+}
+
+// ══════════════════════════════════════════════════
+//  AUTO LOGIN CHECK
+// ══════════════════════════════════════════════════
+sb.auth.onAuthStateChange(async (event, session) => {
+  if (session?.user && !currentUser) {
+    await initApp(session.user);
+  }
+});
+
+// Check existing session on load
+(async () => {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session?.user) await initApp(session.user);
+})();
+</script>
+</body>
+</html>
