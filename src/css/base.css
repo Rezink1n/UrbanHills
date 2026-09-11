@@ -1,0 +1,187 @@
+/* ============================================================================
+   UrbanHills · Base
+   ========================================================================== */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body { height: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
+}
+
+h1, h2, h3, h4 { margin: 0; font-weight: 620; line-height: 1.25; }
+h1 { font-size: 1.6rem; letter-spacing: -0.02em; }
+h2 { font-size: 1.15rem; letter-spacing: -0.01em; }
+h3 { font-size: 0.95rem; }
+p  { margin: 0 0 var(--sp-3); }
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+img, canvas { max-width: 100%; display: block; }
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--r-sm);
+}
+
+[hidden] { display: none !important; }
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 6px;
+  border: 2px solid var(--bg);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+
+/* --- Controles ----------------------------------------------------------- */
+
+button, input, select, textarea { font: inherit; color: inherit; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  padding: 9px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--surface-2);
+  color: var(--text);
+  font-weight: 560;
+  cursor: pointer;
+  transition: background .14s, border-color .14s, transform .06s;
+  white-space: nowrap;
+}
+.btn:hover:not(:disabled) { background: var(--surface-3); border-color: var(--text-faint); }
+.btn:active:not(:disabled) { transform: translateY(1px); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+
+.btn--primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+.btn--primary:hover:not(:disabled) { background: #5ed3b0; border-color: #5ed3b0; }
+
+.btn--ghost { background: transparent; }
+.btn--danger { color: var(--danger); border-color: color-mix(in srgb, var(--danger) 35%, transparent); }
+.btn--sm { padding: 5px 10px; font-size: .82rem; }
+.btn--block { width: 100%; }
+
+.field { display: flex; flex-direction: column; gap: 6px; margin-bottom: var(--sp-3); }
+.field > label { font-size: .8rem; color: var(--text-dim); font-weight: 560; }
+
+.input, select.input {
+  width: 100%;
+  padding: 9px 12px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  transition: border-color .14s;
+}
+.input:focus { border-color: var(--accent); outline: none; }
+.input::placeholder { color: var(--text-faint); }
+
+/* --- Piezas compartidas --------------------------------------------------- */
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r);
+  padding: var(--sp-4);
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--surface-3);
+  font-size: .74rem;
+  font-weight: 560;
+  color: var(--text-dim);
+}
+
+.muted  { color: var(--text-dim); }
+.faint  { color: var(--text-faint); }
+.mono   { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.money  { font-family: var(--mono); color: var(--gold); font-variant-numeric: tabular-nums; }
+.center { text-align: center; }
+
+.stack   { display: flex; flex-direction: column; gap: var(--sp-3); }
+.row     { display: flex; align-items: center; gap: var(--sp-2); }
+.row--sb { justify-content: space-between; }
+.wrap    { flex-wrap: wrap; }
+
+.empty {
+  padding: var(--sp-5);
+  text-align: center;
+  color: var(--text-faint);
+  border: 1px dashed var(--line);
+  border-radius: var(--r);
+}
+
+/* --- Arranque ------------------------------------------------------------- */
+
+.boot {
+  height: 100vh;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: var(--sp-3);
+}
+.boot__mark { font-size: 3rem; animation: pulse 1.6s ease-in-out infinite; }
+.boot__text { color: var(--text-dim); }
+
+@keyframes pulse { 0%, 100% { opacity: .45; } 50% { opacity: 1; } }
+
+/* --- Avisos --------------------------------------------------------------- */
+
+.toasts {
+  position: fixed;
+  right: var(--sp-4);
+  bottom: var(--sp-4);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  pointer-events: none;
+  max-width: min(380px, calc(100vw - 32px));
+}
+.toast {
+  pointer-events: auto;
+  padding: 10px 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--r-sm);
+  box-shadow: var(--shadow);
+  animation: slide-in .18s ease-out;
+}
+.toast--error { border-left-color: var(--danger); }
+.toast--warn  { border-left-color: var(--warn); }
+
+@keyframes slide-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}

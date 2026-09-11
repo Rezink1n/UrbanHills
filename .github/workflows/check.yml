@@ -1,0 +1,73 @@
+# =============================================================================
+# Comprobaciones en cada push y cada PR:
+#   · las migraciones aplican de cero sobre un Postgres limpio
+#   · la prueba de humo del juego pasa
+#   · el catálogo exportado coincide con lo que dicen las migraciones
+#   · los módulos del cliente son sintácticamente válidos
+# =============================================================================
+name: Comprobaciones
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  sql:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: urbanhills_test
+        options: >-
+          --health-cmd pg_isready --health-interval 10s
+          --health-timeout 5s --health-retries 5
+        ports: ['5432:5432']
+
+    env:
+      PGHOST: localhost
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      PGDATABASE: urbanhills_test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar cliente de Postgres
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+      - name: Aplicar migraciones
+        run: |
+          psql -v ON_ERROR_STOP=1 -q -f tools/local-shim.sql
+          for f in supabase/migrations/*.sql; do
+            echo "==> $(basename "$f")"
+            psql -v ON_ERROR_STOP=1 -q -f "$f"
+          done
+
+      - name: Prueba de humo
+        run: psql -v ON_ERROR_STOP=1 -f tools/smoke-test.sql
+
+      - name: Prueba de seguridad (RLS)
+        run: psql -v ON_ERROR_STOP=1 -f tools/rls-test.sql
+
+      - name: Balanceo económico
+        run: psql -v ON_ERROR_STOP=1 -f tools/check-balance.sql
+
+      - name: El catálogo exportado está al día
+        run: |
+          node tools/export-catalog.mjs
+          git diff --exit-code src/data/catalog.json \
+            || { echo "::error::src/data/catalog.json no coincide con las migraciones. Ejecuta node tools/export-catalog.mjs"; exit 1; }
+
+  client:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - name: Sintaxis de los módulos
+        run: |
+          for f in $(find src/js -name '*.js'); do node --check "$f"; done
+          node -e "JSON.parse(require('fs').readFileSync('src/data/catalog.json'))"

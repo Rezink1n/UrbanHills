@@ -1,0 +1,347 @@
+/* ============================================================================
+   UrbanHills · Estructura de la aplicación
+   ========================================================================== */
+
+.app {
+  min-height: 100vh;
+  /* Columna flexible: así el mapa ocupa lo que sobre después de la barra y de
+     la cinta de aviso, en vez de asumir una altura de cabecera fija. */
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- Cabecera ------------------------------------------------------------- */
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  height: var(--header-h);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  padding: 0 var(--sp-4);
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.brand {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+.brand:hover { text-decoration: none; }
+.brand__mark { font-size: 1.2rem; }
+
+.nav {
+  display: flex;
+  gap: 2px;
+  margin-left: var(--sp-3);
+  /* min-width:0 es lo que permite que la barra encoja en vez de empujar la
+     caja fuera de la pantalla; con overflow-x el menú se desliza. */
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.nav::-webkit-scrollbar { display: none; }
+.nav a { white-space: nowrap; }
+.nav a {
+  padding: 6px 12px;
+  border-radius: var(--r-sm);
+  color: var(--text-dim);
+  font-weight: 560;
+  font-size: .88rem;
+}
+.nav a:hover { background: var(--surface-2); color: var(--text); text-decoration: none; }
+.nav a[aria-current="page"] { background: var(--surface-3); color: var(--text); }
+
+.topbar__end {
+  margin-left: auto;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.purse {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 5px 12px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+}
+.purse__label { font-size: .7rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: .05em; }
+
+.tickpill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: .78rem;
+  color: var(--text-faint);
+}
+.tickpill__dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+/* --- Cintas de aviso ------------------------------------------------------ */
+
+.banner {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: 10px var(--sp-4);
+  background: color-mix(in srgb, var(--warn) 12%, var(--surface));
+  border-bottom: 1px solid color-mix(in srgb, var(--warn) 30%, transparent);
+  font-size: .85rem;
+}
+.banner__icon { font-size: 1rem; }
+
+/* --- Mapa ----------------------------------------------------------------- */
+
+.mapview {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--panel-w);
+  flex: 1;
+  min-height: 0;
+}
+.mapview--full { grid-template-columns: 1fr; }
+
+.mapstage {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(1200px 800px at 50% 40%, #121a28 0%, var(--bg) 70%);
+  cursor: grab;
+  touch-action: none;
+}
+.mapstage:active { cursor: grabbing; }
+.mapstage canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+.mapctl {
+  position: absolute;
+  left: var(--sp-3);
+  bottom: var(--sp-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  z-index: 5;
+}
+.mapctl__group {
+  display: flex;
+  background: color-mix(in srgb, var(--surface) 90%, transparent);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  overflow: hidden;
+}
+.mapctl__group .btn {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  padding: 6px 11px;
+  font-size: .8rem;
+}
+.mapctl__group .btn[aria-pressed="true"] { background: var(--surface-3); color: var(--accent); }
+
+.maplegend {
+  position: absolute;
+  right: var(--sp-3);
+  bottom: var(--sp-3);
+  z-index: 5;
+  padding: 10px 12px;
+  background: color-mix(in srgb, var(--surface) 90%, transparent);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  font-size: .74rem;
+  display: grid;
+  gap: 5px;
+}
+.maplegend__row { display: flex; align-items: center; gap: 7px; color: var(--text-dim); }
+.maplegend__sw { width: 11px; height: 11px; border-radius: 3px; flex: none; }
+
+.maphud {
+  position: absolute;
+  top: var(--sp-3);
+  left: var(--sp-3);
+  z-index: 5;
+  padding: 7px 12px;
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  font-family: var(--mono);
+  font-size: .76rem;
+  color: var(--text-dim);
+}
+
+/* --- Panel lateral -------------------------------------------------------- */
+
+.panel {
+  border-left: 1px solid var(--line-soft);
+  background: var(--surface);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.panel__head {
+  position: sticky;
+  top: 0;
+  padding: var(--sp-4);
+  background: var(--surface);
+  border-bottom: 1px solid var(--line-soft);
+  z-index: 2;
+}
+.panel__body { padding: var(--sp-4); display: flex; flex-direction: column; gap: var(--sp-4); }
+
+/* --- Datos ---------------------------------------------------------------- */
+
+.deflist { display: grid; grid-template-columns: auto 1fr; gap: 7px var(--sp-3); font-size: .86rem; }
+.deflist dt { color: var(--text-faint); }
+.deflist dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
+
+.meter { display: grid; gap: 4px; }
+.meter__top { display: flex; justify-content: space-between; font-size: .78rem; }
+.meter__track { height: 5px; background: var(--bg); border-radius: 999px; overflow: hidden; }
+.meter__fill { height: 100%; border-radius: 999px; background: var(--accent); transition: width .3s; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: var(--sp-3); }
+.stat { padding: var(--sp-3); background: var(--surface-2); border-radius: var(--r-sm); }
+.stat__label { font-size: .72rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: .05em; }
+.stat__value { font-size: 1.25rem; font-weight: 640; font-variant-numeric: tabular-nums; margin-top: 2px; }
+
+.table { width: 100%; border-collapse: collapse; font-size: .86rem; }
+.table th {
+  text-align: left;
+  padding: 8px 10px;
+  color: var(--text-faint);
+  font-size: .74rem;
+  font-weight: 620;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  border-bottom: 1px solid var(--line-soft);
+  white-space: nowrap;
+}
+.table td { padding: 9px 10px; border-bottom: 1px solid var(--line-soft); }
+.table tbody tr:hover { background: var(--surface-2); }
+.table .num { text-align: right; font-variant-numeric: tabular-nums; font-family: var(--mono); }
+.table--click tbody tr { cursor: pointer; }
+
+.tablewrap { overflow-x: auto; }
+
+/* --- Catálogo de edificios ------------------------------------------------ */
+
+.buildlist { display: grid; gap: var(--sp-2); }
+.buildopt {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: 10px 12px;
+  background: var(--surface-2);
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+}
+.buildopt:hover:not(:disabled) { border-color: var(--accent); }
+.buildopt:disabled { opacity: .4; cursor: not-allowed; }
+.buildopt__icon { font-size: 1.35rem; }
+.buildopt__name { font-weight: 560; }
+.buildopt__meta { font-size: .76rem; color: var(--text-faint); }
+
+/* --- Páginas centradas ---------------------------------------------------- */
+
+.page {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: var(--sp-5) var(--sp-4) var(--sp-6);
+}
+.page__head { margin-bottom: var(--sp-5); }
+.page__head p { color: var(--text-dim); margin-top: 6px; }
+
+.sheet {
+  max-width: 420px;
+  margin: 8vh auto;
+  padding: var(--sp-5);
+  background: var(--surface);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow);
+}
+
+/* --- Portada -------------------------------------------------------------- */
+
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--sp-6) var(--sp-4);
+  gap: var(--sp-4);
+  background:
+    radial-gradient(900px 600px at 50% 0%, #16202f 0%, var(--bg) 65%);
+}
+.hero h1 { font-size: clamp(2rem, 6vw, 3.2rem); letter-spacing: -0.03em; }
+.hero__lede { max-width: min(46ch, 100%); color: var(--text-dim); font-size: 1.05rem; }
+.hero__mark { font-size: 3.5rem; }
+.hero__actions { display: flex; gap: var(--sp-3); flex-wrap: wrap; justify-content: center; }
+
+.pillars {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: var(--sp-3);
+  width: 100%;
+  max-width: 880px;
+  margin-top: var(--sp-5);
+  text-align: left;
+}
+.pillar { padding: var(--sp-4); background: var(--surface); border: 1px solid var(--line-soft); border-radius: var(--r); }
+.pillar h3 { margin-bottom: 6px; }
+.pillar p { color: var(--text-dim); font-size: .88rem; margin: 0; }
+
+/* --- Rejilla de contenido + lateral --------------------------------------- */
+
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: var(--sp-4);
+  align-items: start;
+}
+
+/* --- Adaptación a pantallas estrechas ------------------------------------- */
+
+@media (max-width: 900px) {
+  :root { --panel-w: 320px; }
+  .nav a { padding: 6px 9px; font-size: .82rem; }
+}
+
+@media (max-width: 960px) {
+  .split { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (max-width: 720px) {
+  .mapview { grid-template-columns: minmax(0, 1fr); grid-template-rows: 1fr auto; }
+  .panel {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+    max-height: 48vh;
+  }
+  .topbar { gap: var(--sp-2); padding: 0 var(--sp-3); }
+  .brand span:not(.brand__mark) { display: none; }
+  .purse { padding: 4px 9px; }
+  .tickpill { display: none; }
+  .maplegend { display: none; }
+}

@@ -1,0 +1,15 @@
+# Dependencias y artefactos locales
+node_modules/
+dist/
+_site/
+
+# Supabase CLI
+supabase/.branches/
+supabase/.temp/
+.env
+.env.local
+
+# Sistema
+.DS_Store
+Thumbs.db
+*.log

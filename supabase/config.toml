@@ -1,0 +1,41 @@
+# Configuración de la CLI de Supabase para desarrollo local.
+#   supabase start      levanta Postgres, Auth, PostgREST y Studio
+#   supabase db reset   recrea la base y aplica supabase/migrations/ en orden
+#   supabase db push    aplica las migraciones al proyecto remoto enlazado
+
+project_id = "urbanhills"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "graphql_public"]
+# El esquema `game` queda deliberadamente fuera: son las tripas del motor y no
+# deben quedar expuestas por PostgREST.
+extra_search_path = ["public", "extensions"]
+max_rows = 2000
+
+[db]
+port = 54322
+major_version = 17
+
+[studio]
+enabled = true
+port = 54323
+
+[auth]
+enabled = true
+site_url = "http://localhost:8080"
+additional_redirect_urls = ["https://localhost:8080"]
+jwt_expiry = 3600
+enable_signup = true
+
+[auth.email]
+enable_signup = true
+# En local no hay servidor de correo: sin esto, no se puede probar el alta.
+enable_confirmations = false
+
+[realtime]
+enabled = true
+
+[edge_runtime]
+enabled = true

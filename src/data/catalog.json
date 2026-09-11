@@ -1,0 +1,2730 @@
+{
+ "generatedAt": "2026-09-11",
+ "note": "Generado por tools/export-catalog.mjs desde supabase/migrations. No editar a mano.",
+ "resources": [
+  {
+   "code": "power",
+   "name": "Electricidad",
+   "category": "utility",
+   "tier": 0,
+   "unit": "kWh",
+   "base_price": 0.08,
+   "is_storable": false,
+   "volume": 0,
+   "icon": "⚡",
+   "sort_order": 10
+  },
+  {
+   "code": "water",
+   "name": "Agua",
+   "category": "utility",
+   "tier": 0,
+   "unit": "m³",
+   "base_price": 0.15,
+   "is_storable": false,
+   "volume": 0,
+   "icon": "💧",
+   "sort_order": 11
+  },
+  {
+   "code": "stone",
+   "name": "Piedra",
+   "category": "raw",
+   "tier": 0,
+   "unit": "t",
+   "base_price": 12,
+   "is_storable": true,
+   "volume": 1,
+   "icon": "🪨",
+   "sort_order": 12
+  },
+  {
+   "code": "sand",
+   "name": "Arena",
+   "category": "raw",
+   "tier": 0,
+   "unit": "t",
+   "base_price": 9,
+   "is_storable": true,
+   "volume": 1,
+   "icon": "⏳",
+   "sort_order": 13
+  },
+  {
+   "code": "clay",
+   "name": "Arcilla",
+   "category": "raw",
+   "tier": 0,
+   "unit": "t",
+   "base_price": 10,
+   "is_storable": true,
+   "volume": 1,
+   "icon": "🧱",
+   "sort_order": 14
+  },
+  {
+   "code": "timber",
+   "name": "Madera en rollo",
+   "category": "raw",
+   "tier": 0,
+   "unit": "m³",
+   "base_price": 28,
+   "is_storable": true,
+   "volume": 1.4,
+   "icon": "🪵",
+   "sort_order": 15
+  },
+  {
+   "code": "iron_ore",
+   "name": "Mineral de hierro",
+   "category": "raw",
+   "tier": 0,
+   "unit": "t",
+   "base_price": 35,
+   "is_storable": true,
+   "volume": 1,
+   "icon": "⛏️",
+   "sort_order": 16
+  },
+  {
+   "code": "coal",
+   "name": "Carbón",
+   "category": "raw",
+   "tier": 0,
+   "unit": "t",
+   "base_price": 30,
+   "is_storable": true,
+   "volume": 1.1,
+   "icon": "🪨",
+   "sort_order": 17
+  },
+  {
+   "code": "crude_oil",
+   "name": "Petróleo",
+   "category": "raw",
+   "tier": 0,
+   "unit": "bbl",
+   "base_price": 55,
+   "is_storable": true,
+   "volume": 0.2,
+   "icon": "🛢️",
+   "sort_order": 18
+  },
+  {
+   "code": "crops",
+   "name": "Cultivo",
+   "category": "raw",
+   "tier": 0,
+   "unit": "t",
+   "base_price": 40,
+   "is_storable": true,
+   "volume": 1.2,
+   "icon": "🌾",
+   "sort_order": 19
+  },
+  {
+   "code": "cement",
+   "name": "Cemento",
+   "category": "material",
+   "tier": 1,
+   "unit": "t",
+   "base_price": 85,
+   "is_storable": true,
+   "volume": 0.9,
+   "icon": "🏗️",
+   "sort_order": 20
+  },
+  {
+   "code": "brick",
+   "name": "Ladrillo",
+   "category": "material",
+   "tier": 1,
+   "unit": "palé",
+   "base_price": 60,
+   "is_storable": true,
+   "volume": 1.2,
+   "icon": "🧱",
+   "sort_order": 21
+  },
+  {
+   "code": "glass",
+   "name": "Vidrio",
+   "category": "material",
+   "tier": 1,
+   "unit": "m²",
+   "base_price": 70,
+   "is_storable": true,
+   "volume": 0.3,
+   "icon": "🪟",
+   "sort_order": 22
+  },
+  {
+   "code": "steel",
+   "name": "Acero",
+   "category": "material",
+   "tier": 1,
+   "unit": "t",
+   "base_price": 190,
+   "is_storable": true,
+   "volume": 0.8,
+   "icon": "🔩",
+   "sort_order": 23
+  },
+  {
+   "code": "lumber",
+   "name": "Tablones",
+   "category": "material",
+   "tier": 1,
+   "unit": "m³",
+   "base_price": 95,
+   "is_storable": true,
+   "volume": 1.3,
+   "icon": "🪚",
+   "sort_order": 24
+  },
+  {
+   "code": "plastic",
+   "name": "Plástico",
+   "category": "material",
+   "tier": 1,
+   "unit": "t",
+   "base_price": 150,
+   "is_storable": true,
+   "volume": 1.6,
+   "icon": "🧴",
+   "sort_order": 25
+  },
+  {
+   "code": "fuel",
+   "name": "Combustible",
+   "category": "material",
+   "tier": 1,
+   "unit": "L",
+   "base_price": 1.4,
+   "is_storable": true,
+   "volume": 0.01,
+   "icon": "⛽",
+   "sort_order": 26
+  },
+  {
+   "code": "food",
+   "name": "Alimentos",
+   "category": "material",
+   "tier": 1,
+   "unit": "t",
+   "base_price": 120,
+   "is_storable": true,
+   "volume": 1,
+   "icon": "🥫",
+   "sort_order": 27
+  },
+  {
+   "code": "concrete",
+   "name": "Hormigón",
+   "category": "material",
+   "tier": 2,
+   "unit": "m³",
+   "base_price": 160,
+   "is_storable": true,
+   "volume": 1,
+   "icon": "🏭",
+   "sort_order": 30
+  },
+  {
+   "code": "components",
+   "name": "Componentes",
+   "category": "component",
+   "tier": 2,
+   "unit": "ud",
+   "base_price": 45,
+   "is_storable": true,
+   "volume": 0.05,
+   "icon": "⚙️",
+   "sort_order": 31
+  },
+  {
+   "code": "furniture",
+   "name": "Muebles",
+   "category": "good",
+   "tier": 2,
+   "unit": "ud",
+   "base_price": 320,
+   "is_storable": true,
+   "volume": 1.8,
+   "icon": "🛋️",
+   "sort_order": 32
+  },
+  {
+   "code": "electronics",
+   "name": "Electrónica",
+   "category": "component",
+   "tier": 2,
+   "unit": "ud",
+   "base_price": 260,
+   "is_storable": true,
+   "volume": 0.1,
+   "icon": "📱",
+   "sort_order": 33
+  },
+  {
+   "code": "machinery",
+   "name": "Maquinaria",
+   "category": "component",
+   "tier": 2,
+   "unit": "ud",
+   "base_price": 2000,
+   "is_storable": true,
+   "volume": 4,
+   "icon": "🚜",
+   "sort_order": 34
+  },
+  {
+   "code": "groceries",
+   "name": "Compra diaria",
+   "category": "good",
+   "tier": 3,
+   "unit": "cesta",
+   "base_price": 24,
+   "is_storable": false,
+   "volume": 0,
+   "icon": "🛒",
+   "sort_order": 40
+  },
+  {
+   "code": "meals",
+   "name": "Comida preparada",
+   "category": "service",
+   "tier": 3,
+   "unit": "menú",
+   "base_price": 18,
+   "is_storable": false,
+   "volume": 0,
+   "icon": "🍽️",
+   "sort_order": 41
+  },
+  {
+   "code": "leisure",
+   "name": "Ocio",
+   "category": "service",
+   "tier": 3,
+   "unit": "entrada",
+   "base_price": 22,
+   "is_storable": false,
+   "volume": 0,
+   "icon": "🎬",
+   "sort_order": 42
+  }
+ ],
+ "buildingTypes": [
+  {
+   "code": "quarry",
+   "name": "Cantera",
+   "category": "extraction",
+   "tier": 0,
+   "description": "Arranca piedra y arena de la roca viva. Ruidosa, polvorienta y el primer negocio de casi todo el mundo.",
+   "build_cost": 45000,
+   "build_minutes": 20,
+   "build_materials": {},
+   "upkeep_per_tick": 8,
+   "jobs": 8,
+   "job_class": "low",
+   "base_wage": 3,
+   "power_use": 2,
+   "water_use": 0,
+   "pollution": 6,
+   "noise": 9,
+   "prestige": -6,
+   "effect_radius": 3,
+   "service": "none",
+   "service_strength": 0,
+   "housing_capacity": 0,
+   "housing_class": null,
+   "retail_capacity": 0,
+   "base_rent": 0,
+   "storage_capacity": 0,
+   "allowed_terrain": [
+    "rock",
+    "hill",
+    "ridge"
+   ],
+   "allowed_zoning": [
+    "unzoned",
+    "industrial"
+   ],
+   "max_slope": 80,
+   "municipal_only": false,
+   "min_reputation": 0,
+   "icon": "⛰️",
+   "sort_order": 100
+  },
+  {
+   "code": "clay_pit",
+   "name": "Arcillera",
+   "category": "extraction",
+   "tier": 0,
+   "description": "Extracción de arcilla en terreno bajo. Barata de montar, margen corto.",
+   "build_cost": 32000,
+   "build_minutes": 20,
+   "build_materials": {},
+   "upkeep_per_tick": 6,
+   "jobs": 6,
+   "job_class": "low",
+   "base_wage": 3,
+   "power_use": 2,
+   "water_use": 2,
+   "pollution": 4,
+   "noise": 4,
+   "prestige": -4,
+   "effect_radius": 2,
+   "service": "none",
+   "service_strength": 0,
+   "housing_capacity": 0,
+   "housing_class": null,
+   "retail_capacity": 0,
+   "base_rent": 0,
+   "storage_capacity": 0,
+   "allowed_terrain": [
+    "lowland",
+    "forest"
+   ],
+   "allowed_zoning": [
+    "unzoned",
+    "industrial"
+   ],
+   "max_slope": 30,
+   "municipal_only": false,
+   "min_reputation": 0,
+   "icon": "🕳️",
+   "sort_order": 101
+  },
+  {
+   "code": "sawmill",
+   "name": "Aserradero",
+   "category": "extraction",
+   "tier": 0,
+   "description": "Tala controlada y descortezado. Sólo funciona sobre suelo forestal.",
+   "build_cost": 52000,
+   "build_minutes": 20,
+   "build_materials": {},
+   "upkeep_per_tick": 8,
+   "jobs": 8,
+   "job_class": "low",
+   "base_wage": 3,
+   "power_use": 3,
+   "water_use": 1,
+   "pollution": 3,
+   "noise": 7,
+   "prestige": -3,
+   "effect_radius": 2,
+   "service": "none",
+   "service_strength": 0,
+   "housing_capacity": 0,
+   "housing_class": null,
+   "retail_capacity": 0,
+   "base_rent": 0,
+   "storage_capacity": 0,
+   "allowed_terrain": [
+    "forest"
+   ],
+   "allowed_zoning": [
+    "unzoned",
+    "industrial"
+   ],
+   "max_slope": 60,
+   "municipal_only": false,
+   "min_reputation": 0,
+   "icon": "🌲",
+   "sort_order": 102
+  },
+  {
+   "code": "iron_mine",
+   "name": "Mina de hierro",
+   "category": "extraction",
+   "tier": 0,
+   "description": "Galería en la ladera. Mucho empleo poco cualificado y un paisaje arruinado.",
+   "build_cost": 140000,
+   "build_minutes": 20,
+   "build_materials": {
+    "cement": 20
+   },
+   "upkeep_per_tick": 15,
+   "jobs": 14,
+   "job_class": "low",
+   "base_wage": 3,
+   "power_use": 12,
+   "water_use": 4,
+   "pollution": 14,
+   "noise": 14,
+   "prestige": -12,
+   "effect_radius": 4,
+   "service": "none",
+   "service_strength": 0,
+   "housing_capacity": 0,
+   "housing_class": null,
+   "retail_capacity": 0,
+   "base_rent": 0,
+   "storage_capacity": 0,
+   "allowed_terrain": [
+    "hill",
+    "ridge",
+    "rock"
+   ],
+   "allowed_zoning": [
+    "unzoned",
+    "industrial"
+   ],
+   "max_slope": 90,
+   "municipal_only": false,
+   "min_reputation": 0,
+   "icon": "⛏️",
+   "sort_order": 103
+  },
+  {
+   "code": "coal_mine",
+   "name": "Mina de carbón",
+   "category": "extraction",
+   "tier": 0,
+   "description": "Sucia y rentable mientras la ciudad queme carbón para tener luz.",
+   "build_cost": 130000,
+   "build_minutes": 20,
+   "build_materials": {
+    "cement": 20
+   },
+   "upkeep_per_tick": 15,
+   "jobs": 14,
+   "job_class": "low",
+   "base_wage": 3,
+   "power_use": 12,
+   "water_use": 4,
+   "pollution": 18,
+   "noise": 12,
+   "prestige": -16,
+   "effect_radius": 4,
+   "service": "none",
+   "service_strength": 0,
+   "housing_capacity": 0,
+   "housing_class": null,
+   "retail_capacity": 0,
+   "base_rent": 0,
+   "storage_capacity": 0,
+   "allowed_terrain": [
+    "hill",
+    "rock"
+   ],
+   "allowed_zoning": [
+    "unzoned",
+    "industrial"
+   ],
+   "max_slope": 90,
+   "municipal_only": false,
+   "min_reputation": 0,
+   "icon": "🏴",
+   "sort_order": 104
+  },
+  {
+   "code": "oil_well",
+   "name": "Pozo petrolífero",
+   "category": "extraction",
+   "tier": 0,
+   "description": "Pocas manos, mucho dinero y un vecindario que lo va a notar.",
+   "build_cost": 260000,
+   "build_minutes": 20,
+   "build_materials": {
+    "steel": 15,
+    "cement": 25
+   },
+   "upkeep_per_tick": 30,
+   "jobs": 10,
+   "job_class": "mid",
+   "base_wage": 6,
+   "power_use": 18,
+   "water_use": 6,
+   "pollution": 16,
+   "noise": 10,
+   "prestige": -14,
+   "effect_radius": 4,
+   "service": "none",
+   "service_strength": 0,
+   "housing_capacity": 0,
+   "housing_class": null,
+   "retail_capacity": 0,
+   "base_rent": 0,
+   "storage_capacity": 0,
+   "allowed_terrain": [
+    "lowland",
+    "rock"
+   ],
+   "allowed_zoning": [
+    "unzoned",
+    "industrial"
+   ],
+   "max_slope": 25,
+   "municipal_only": false,
+   "min_reputation": 0,
+   "icon": "🛢️",
+   "sort_order": 105
+  },
+  {
+   "code": "farm",
+   "name": "Granja",
+   "category": "extraction",
+   "tier": 0,
+   "description": "Cultivo en las vegas bajas. Ocupa mucho suelo para lo que renta.",
+   "build_cost": 60000,
+   "build_minutes": 30,
+   "build_materials": {},
+   "upkeep_per_tick": 12,
+   "jobs": 12,
+   "job_class": "low",
+   "base_wage": 3,
+   "power_use": 4,
+   "water_use": 40,
+   "pollution": 2,
+   "noise": 2,
+   "prestige": 2,
+   "effect_radius": 2,
+   "service": "none",
+   "service_strength": 0,
+   "housing_capacity": 0,
+   "housing_class": null,
+   "retail_capacity": 0,
+   "base_rent": 0,
+   "storage_capacity": 0,
+   "allowed_terrain": [
+    "lowland"
+   ],
+   "allowed_zoning": [
+    "unzoned",
+    "industrial"
+   ],
+   "max_slope": 20,
+   "municipal_only": false,
+   "min_reputation": 0,
+   "icon": "🌾",
+   "sort_order": 106
+  },
+  {
+   "code": "water_plant",
+   "name": "Captación de agua",
+   "category": "extraction",
+   "tier": 0,
+   "description": "Toma y potabilización. Sin ella no hay hormigón, ni comida, ni ciudad.",
+   "build_cost": 95000,
+   "build_minutes": 10,
+   "build_materials": {
+    "concrete": 10
+   },
+   "upkeep_per_tick": 10,
+   "jobs": 4,
+   "job_class": "low",
+   "base_wage": 3,
+   "power_use": 30,
+   "water_use": 0,
+   "pollution": 1,
+   "noise": 3,
+   "prestige": 0,
+   "effect_radius": 2,
+   "service": "utility",
+   "service_strength": 8,
+   "housing_capacity": 0,
+   "housing_class": null,
+   "retail_capacity": 0,
+   "base_rent": 0,
+   "storage_capacity": 0,
+   "allowed_terrain": [
+    "lowland",
+    "water"
+   ],
+   "allowed_zoning": [
+    "unzoned",
+    "industrial",
+    "civic"
+   ],
+   "max_slope": 20,
+   "municipal_only": false,
+   "min_reputation": 0,
+   "icon": "🚰",
+   "sort_order": 107
+  },
+  {
+   "code": "solar_farm",
+   "name": "Huerto solar",
+   "category": "energy",
+   "tier": 1,
+   "description": "Silencioso y limpio. Rinde más cuanto más alto y despejado esté.",
+   "build_cost": 180000,
+   "build_minutes": 30,
+   "build_materials": {
+    "glass": 40,
+    "steel": 10
+   },
+   "upkeep_per_tick": 20,
+   "jobs": 2,
+   "job_class": "low",
+   "base_wage": 3,
+   "power_use": 0,
+   "water_use": 0,
+   "pollution": 0,
+   "noise": 0,
+   "prestige": -1,
+   "effect_radius": 2,
+   "service": "none",
+   "service_strength": 0,
+   "housing_capacity": 0,
+   "housing_class": null,
+   "retail_capacity": 0,
+   "base_rent": 0,
+   "storage_capacity": 0,
+   "allowed_terrain": [
+    "lowland",
+    "hill",
+    "ridge",
+    "rock"
+   ],
+   "allowed_zoning": [
+    "unzoned",
+    "industrial"
+   ],
+   "max_slope": 40,
+   "municipal_only": false,
+   "min_reputation": 0,
+   "icon": "☀️",
+   "sort_order": 110
+  },
+  {
+   "code": "wind_farm",
+   "name": "Parque eólico",
+   "category": "energy",
+   "tier": 1,
+   "description": "Sólo en cresta, donde pega el viento. Molesta a la vista y al oído del vecino.",
+   "build_cost": 240000,
+   "build_minutes": 30,
+   "build_materials": {
+    "steel": 30,
+    "concrete": 20
+   },
+   "upkeep_per_tick": 30,
+   "jobs": 3,
+   "job_class": "low",
+   "base_wage": 3,
+   "power_use": 0,
+   "water_use": 0,
+   "pollution": 0,
+   "noise": 12,
+   "prestige": -4,
+   "effect_radius": 3,
+   "service": "none",
+   "service_strength": 0,
+   "housing_capacity": 0,
+   "housing_class": null,
+   "retail_capacity": 0,
+   "base_rent": 0,
+   "storage_capacity": 0,
+   "allowed_terrain": [
+    "ridge"
+   ],
+   "allowed_zoning": [
+    "unzoned",
+    "industrial"
+   ],
+   "max_slope": 100,
+   "municipal_only": false,
+   "min_reputation": 0,
+   "icon": "🌬️",
+   "sort_order": 111
+  },
+  {
+   "code": "coal_plant",
+   "name": "Central térmica",
+   "category": "energy",
+   "tier": 1,
+   "description": "La forma más barata y más sucia de encender la ciudad.",
+   "build_cost": 520000,
+   "build_minutes": 40,
+   "build_materials": {
+    "steel": 60,
+    "concrete": 80
+   },
+   "upkeep_per_tick": 80,
+   "jobs": 20,
+   "job_class": "mid",
+   "base_wage": 6,
+   "power_use": 0,
+   "water_use": 20,
+   "pollution": 45,
+   "noise": 20,
+   "prestige": -28,
+   "effect_radius": 6,
+   "service": "none",
+   "service_strength": 0,
+   "housing_capacity": 0,
+   "housing_class": null,
+   "retail_capacity": 0,
+   "base_rent": 0,
+   "storage_capacity": 0,
+   "allowed_terrain": [
+    "lowland",
+    "hill",
+    "rock"
+   ],
+   "allowed_zoning": [
+    "industrial"
+   ],
+   "max_slope": 30,
+   "municipal_only": false,
+   "min_reputation": 0,
+   "icon": "🏭",
+   "sort_order": 112
+  },
+  {
+   "code": "cement_plant",
+   "name": "Cementera",
+   "category": "processing",
+   "tier": 1,
+   "description": "Convierte piedra en la base material de toda la ciudad.",
+   "build_cost": 210000,
+   "build_minutes": 30,
+   "build_materials": {
+    "steel": 20
+   },
+   "upkeep_per_tick": 30,
+   "jobs": 16,
+   "job_class": "mid",
+   "base_wage": 6,
+   "power_use": 200,
+   "water_use": 2,
+   "pollution": 22,
+   "noise": 16,
+   "prestige": -14,
+   "effect_radius": 4,
+   "service": "none",
+   "service_strength": 0,
+   "housing_capacity": 0,
+   "housing_class": null,
+   "retail_capacity": 0,
+   "base_rent": 0,
+   "storage_capacity": 0,
+   "allowed_terrain": [
+    "lowland",
+    "hill",
+    "rock"
+   ],
+   "allowed_zoning": [
+    "industrial"
+   ],
+   "max_slope": 40,
+   "municipal_only": false,
+   "min_reputation": 0,
+   "icon": "🏗️",
+   "sort_order": 120
+  },
+  {
+   "code": "brickworks",
+   "name": "Ladrillería",
+   "category": "processing",
+   "tier": 1,
+   "description": "Horno de ladrillo. Negocio modesto y estable.",
+   "build_cost": 120000,
+   "build_minutes": 25,
+   "build_materials": {
+    "steel": 8
+   },
+   "upkeep_per_tick": 20,
+   "jobs": 12,
+   "job_class": "low",
+   "base_wage": 3,
+   "power_use": 100,
+   "water_use": 2,
+   "pollution": 12,
+   "noise": 10,
+   "prestige": -8,
+   "effect_radius": 3,
+   "service": "none",
+   "service_strength": 0,
+   "housing_capacity": 0,
+   "housing_class": null,
+   "retail_capacity": 0,
+   "base_rent": 0,
+   "storage_capacity": 0,
+   "allowed_terrain": [
+    "lowland",
+    "hill"
+   ],
+   "allowed_zoning": [
+    "industrial"
+   ],
+   "max_slope": 40,
+   "municipal_only": false,
+   "min_reputation": 0,
+   "icon": "🧱",
+   "sort_order": 121
+  },
+  {
+   "code": "glassworks",
+   "name": "Vidriería",
+   "category": "processing",
+   "tier": 1,
+   "description": "Arena y muchísimo calor. Imprescindible en cuanto la ciudad crece a lo alto.",
+   "build_cost": 200000,
+   "build_minutes": 30,
+   "build_materials": {
+    "brick": 20,
+    "steel": 15
+   },
+   "upkeep_per_tick": 25,
+   "jobs": 12,
+   "job_class": "mid",
+   "base_wage": 6,
+   "power_use": 300,
+   "water_use": 4,
+   "pollution": 14,
+   "noise": 10,
+   "prestige": -8,
+   "effect_radius": 3,
+   "service": "none",
+   "service_strength": 0,
+   "housing_capacity": 0,
+   "housing_class": null,
+   "retail_capacity": 0,
+   "base_rent": 0,
+   "storage_capacity": 0,
+   "allowed_terrain": [
+    "lowland",
+    "hill"
+   ],
+   "allowed_zoning": [
+    "industrial"
+   ],
+   "max_slope": 40,
+   "municipal_only": false,
+   "min_reputation": 0,
+   "icon": "🪟",
+   "sort_order": 122
+  },
+  {
+   "code": "steel_mill",
+   "name": "Acería",
+   "category": "processing",
+   "tier": 1,
+   "description": "El corazón industrial. Emplea a un barrio entero y hunde su valor de suelo.",
+   "build_cost": 620000,
+   "build_minutes": 40,
+   "build_materials": {
+    "brick": 40,
+    "concrete": 80
+   },
+   "upkeep_per_tick": 60,
+   "jobs": 24,
+   "job_class": "mid",
+   "base_wage": 6,
+   "power_use": 750,
+   "water_use": 10,
+   "pollution": 40,
+   "noise": 26,
+   "prestige": -26,
+   "effect_radius": 6,
+   "service": "none",
+   "service_strength": 0,
+   "housing_capacity": 0,
+   "housing_class": null,
+   "retail_capacity": 0,
+   "base_rent": 0,
+   "storage_capacity": 0,
+   "allowed_terrain": [
+    "lowland",
+    "hill"
+   ],
+   "allowed_zoning": [
+    "industrial"
+   ],
+   "max_slope": 30,
+   "municipal_only": false,
+   "min_reputation": 0,
+   "icon": "🔥",
+   "sort_order": 123
+  },
+  {
+   "code": "lumber_mill",
+   "name": "Maderera",
+   "category": "processing",
+   "tier": 1,
+   "description": "Tronco a tablón. La entrada natural del que empezó con un aserradero.",
+   "build_cost": 110000,
+   "build_minutes": 25,
+   "build_materials": {
+    "brick": 15
+   },
+   "upkeep_per_tick": 20,
+   "jobs": 10,
+   "job_class": "low",
+   "base_wage": 3,
+   "power_use": 75,
+   "water_use": 1,
+   "pollution": 8,
+   "noise": 12,
+   "prestige": -6,
+   "effect_radius": 3,
+   "service": "none",
+   "service_strength": 0,
+   "housing_capacity": 0,
+   "housing_class": null,
+   "retail_capacity": 0,
+   "base_rent": 0,
+   "storage_capacity": 0,
+   "allowed_terrain": [
+    "lowland",
+    "forest",
+    "hill"
+   ],
+   "allowed_zoning": [
+    "industrial"
+   ],
+   "max_slope": 50,
+   "municipal_only": false,
+   "min_reputation": 0,
+   "icon": "🪚",
+   "sort_order": 124
+  },
+  {
+   "code": "refinery",
+   "name": "Refinería",
+   "category": "processing",
+   "tier": 1,
+   "description": "Combustible y plásticos. La instalación más rentable y más odiada del mapa.",
+   "build_cost": 980000,
+   "build_minutes": 60,
+   "build_materials": {
+    "steel": 90,
+    "concrete": 120
+   },
+   "upkeep_per_tick": 100,
+   "jobs": 16,
+   "job_class": "high",
+   "base_wage": 12,
+   "power_use": 500,
+   "water_use": 12,
+   "pollution": 50,
+   "noise": 22,
+   "prestige": -34,
+   "effect_radius": 7,
+   "service": "none",
+   "service_strength": 0,
+   "housing_capacity": 0,
+   "housing_class": null,
+   "retail_capacity": 0,
+   "base_rent": 0,
+   "storage_capacity": 0,
+   "allowed_terrain": [
+    "lowland",
+    "rock"
+   ],
+   "allowed_zoning": [
+    "industrial"
+   ],
+   "max_slope": 20,
+   "municipal_only": false,
+   "min_reputation": 10,
+   "icon": "⚗️",
+   "sort_order": 125
+  },
+  {
+   "code": "food_plant",
+   "name": "Procesadora alimentaria",
+   "category": "processing",
+   "tier": 1,
+   "description": "Cultivo a alimento envasado. Alimenta a las tiendas de media ciudad.",
+   "build_cost": 175000,
+   "build_minutes": 30,
+   "build_materials": {
+    "brick": 25,
+    "steel": 15
+   },
+   "upkeep_per_tick": 25,
+   "jobs": 14,
+   "job_class": "low",
+   "base_wage": 3,
+   "power_use": 150,
+   "water_use": 50,
+   "pollution": 8,
+   "noise": 8,
+   "prestige": -4,
+   "effect_radius": 3,
+   "service": "none",
+   "service_strength": 0,
+   "housing_capacity": 0,
+   "housing_class": null,
+   "retail_capacity": 0,
+   "base_rent": 0,
+   "storage_capacity": 0,
+   "allowed_terrain": [
+    "lowland",
+    "hill"
+   ],
+   "allowed_zoning": [
+    "industrial"
+   ],
+   "max_slope": 40,
+   "municipal_only": false,
+   "min_reputation": 0,
+   "icon": "🥫",
+   "sort_order": 126
+  },
+  {
+   "code": "concrete_plant",
+   "name": "Hormigonera",
+   "category": "manufacturing",
+   "tier": 2,
+   "description": "Cemento, arena y agua. Todo el que construya te va a comprar.",
+   "build_cost": 155000,
+   "build_minutes": 25,
+   "build_materials": {
+    "steel": 20
+   },
+   "upkeep_per_tick": 25,
+   "jobs": 10,
+   "job_class": "low",
+   "base_wage": 3,
+   "power_use": 60,
+   "water_use": 30,
+   "pollution": 10,
+   "noise": 14,
+   "prestige": -8,
+   "effect_radius": 3,
+   "service": "none",
+   "service_strength": 0,
+   "housing_capacity": 0,
+   "housing_class": null,
+   "retail_capacity": 0,
+   "base_rent": 0,
+   "storage_capacity": 0,
+   "allowed_terrain": [
+    "lowland",
+    "hill"
+   ],
+   "allowed_zoning": [
+    "industrial"
+   ],
+   "max_slope": 40,
+   "municipal_only": false,
+   "min_reputation": 0,
+   "icon": "🧮",
+   "sort_order": 130
+  },
+  {
+   "code": "component_factory",
+   "name": "Fábrica de componentes",
+   "category": "manufacturing",
+   "tier": 2,
+   "description": "La pieza intermedia que necesita todo lo demás.",
+   "build_cost": 380000,
+   "build_minutes": 40,
+   "build_materials": {
+    "steel": 30,
+    "concrete": 50
+   },
+   "upkeep_per_tick": 50,
+   "jobs": 18,
+   "job_class": "mid",
+   "base_wage": 6,
+   "power_use": 300,
+   "water_use": 5,
+   "pollution": 16,
+   "noise": 12,
+   "prestige": -8,
+   "effect_radius": 4,
+   "service": "none",
+   "service_strength": 0,
+   "housing_capacity": 0,
+   "housing_class": null,
+   "retail_capacity": 0,
+   "base_rent": 0,
+   "storage_capacity": 0,
+   "allowed_terrain": [
+    "lowland",
+    "hill"
+   ],
+   "allowed_zoning": [
+    "industrial"
+   ],
+   "max_slope": 40,
+   "municipal_only": false,
+   "min_reputation": 0,
+   "icon": "⚙️",
+   "sort_order": 131
+  },
+  {
+   "code": "furniture_factory",
+   "name": "Carpintería industrial",
+   "category": "manufacturing",
+   "tier": 2,
+   "description": "Muebles para los pisos que están levantando los demás.",
+   "build_cost": 290000,
+   "build_minutes": 35,
+   "build_materials": {
+    "brick": 30,
+    "concrete": 40
+   },
+   "upkeep_per_tick": 45,
+   "jobs": 14,
+   "job_class": "mid",
+   "base_wage": 6,
+   "power_use": 130,
+   "water_use": 3,
+   "pollution": 10,
+   "noise": 12,
+   "prestige": -4,
+   "effect_radius": 3,
+   "service": "none",
+   "service_strength": 0,
+   "housing_capacity": 0,
+   "housing_class": null,
+   "retail_capacity": 0,
+   "base_rent": 0,
+   "storage_capacity": 0,
+   "allowed_terrain": [
+    "lowland",
+    "hill",
+    "forest"
+   ],
+   "allowed_zoning": [
+    "industrial"
+   ],
+   "max_slope": 40,
+   "municipal_only": false,
+   "min_reputation": 0,
+   "icon": "🛋️",
+   "sort_order": 132
+  },
+  {
+   "code": "electronics_factory",
+   "name": "Fábrica de electrónica",
+   "category": "manufacturing",
+   "tier": 2,
+   "description": "Alto valor añadido y plantilla cualificada: necesita barrio bueno cerca.",
+   "build_cost": 720000,
+   "build_minutes": 50,
+   "build_materials": {
+    "glass": 40,
+    "steel": 50,
+    "concrete": 70
+   },
+   "upkeep_per_tick": 80,
+   "jobs": 20,
+   "job_class": "high",
+   "base_wage": 12,
+   "power_use": 600,
+   "water_use": 6,
+   "pollution": 12,
+   "noise": 8,
+   "prestige": 0,
+   "effect_radius": 3,
+   "service": "none",
+   "service_strength": 0,
+   "housing_capacity": 0,
+   "housing_class": null,
+   "retail_capacity": 0,
+   "base_rent": 0,
+   "storage_capacity": 0,
+   "allowed_terrain": [
+    "lowland",
+    "hill"
+   ],
+   "allowed_zoning": [
+    "industrial",
+    "mixed"
+   ],
+   "max_slope": 35,
+   "municipal_only": false,
+   "min_reputation": 15,
+   "icon": "📱",
+   "sort_order": 133
+  },
+  {
+   "code": "machinery_factory",
+   "name": "Fábrica de maquinaria",
+   "category": "manufacturing",
+   "tier": 2,
+   "description": "El bien de capital del juego: sin maquinaria no se amplía ningún edificio.",
+   "build_cost": 890000,
+   "build_minutes": 60,
+   "build_materials": {
+    "steel": 70,
+    "concrete": 90
+   },
+   "upkeep_per_tick": 100,
+   "jobs": 22,
+   "job_class": "high",
+   "base_wage": 12,
+   "power_use": 600,
+   "water_use": 8,
+   "pollution": 20,
+   "noise": 18,
+   "prestige": -8,
+   "effect_radius": 4,
+   "service": "none",
+   "service_strength": 0,
+   "housing_capacity": 0,
+   "housing_class": null,
+   "retail_capacity": 0,
+   "base_rent": 0,
+   "storage_capacity": 0,
+   "allowed_terrain": [
+    "lowland",
+    "hill"
+   ],
+   "allowed_zoning": [
+    "industrial"
+   ],
+   "max_slope": 35,
+   "municipal_only": false,
+   "min_reputation": 15,
+   "icon": "🚜",
+   "sort_order": 134
+  },
+  {
+   "code": "social_housing",
+   "name": "Vivienda protegida",
+   "category": "residential",
+   "tier": 1,
+   "description": "Alquiler bajo y obligatorio agradecimiento municipal. Sube reputación.",
+   "build_cost": 240000,
+   "build_minutes": 40,
+   "build_materials": {
+    "brick": 80,
+    "concrete": 60
+   },
+   "upkeep_per_tick": 20,
+   "jobs": 0,
+   "job_class": "low",
+   "base_wage": 0,
+   "power_use": 10,
+   "water_use": 30,
+   "pollution": 1,
+   "noise": 3,
+   "prestige": 0,
+   "effect_radius": 2,
+   "service": "none",
+   "service_strength": 0,
+   "housing_capacity": 70,
+   "housing_class": "low",
+   "retail_capacity": 0,
+   "base_rent": 4,
+   "storage_capacity": 0,
+   "allowed_terrain": [
+    "lowland",
+    "hill",
+    "ridge"
+   ],
+   "allowed_zoning": [
+    "residential",
+    "mixed"
+   ],
+   "max_slope": 50,
+   "municipal_only": false,
+   "min_reputation": 0,
+   "icon": "🏘️",
+   "sort_order": 140
+  },
+  {
+   "code": "townhouses",
+   "name": "Adosados",
+   "category": "residential",
+   "tier": 1,
+   "description": "Baja densidad, clase media y un césped diminuto. Revaloriza el barrio.",
+   "build_cost": 185000,
+   "build_minutes": 35,
+   "build_materials": {
+    "brick": 90,
+    "glass": 20,
+    "lumber": 40
+   },
+   "upkeep_per_tick": 18,
+   "jobs": 0,
+   "job_class": "mid",
+   "base_wage": 0,
+   "power_use": 8,
+   "water_use": 25,
+   "pollution": 0,
+   "noise": 2,
+   "prestige": 5,
+   "effect_radius": 2,
+   "service": "none",
+   "service_strength": 0,
+   "housing_capacity": 24,
+   "housing_class": "mid",
+   "retail_capacity": 0,
+   "base_rent": 9,
+   "storage_capacity": 0,
+   "allowed_terrain": [
+    "lowland",
+    "hill",
+    "forest"
+   ],
+   "allowed_zoning": [
+    "residential",
+    "mixed"
+   ],
+   "max_slope": 45,
+   "municipal_only": false,
+   "min_reputation": 0,
+   "icon": "🏡",
+   "sort_order": 141
+  },
+  {
+   "code": "apartment_block",
+   "name": "Bloque de apartamentos",
+   "category": "residential",
+   "tier": 2,
+   "description": "La máquina de densidad. Mucha gente, mucha renta, mucha presión de servicios.",
+   "build_cost": 430000,
+   "build_minutes": 50,
+   "build_materials": {
+    "glass": 60,
+    "steel": 40,
+    "concrete": 140
+   },
+   "upkeep_per_tick": 45,
+   "jobs": 0,
+   "job_class": "mid",
+   "base_wage": 0,
+   "power_use": 25,
+   "water_use": 90,
+   "pollution": 2,
+   "noise": 6,
+   "prestige": 2,
+   "effect_radius": 3,
+   "service": "none",
+   "service_strength": 0,
+   "housing_capacity": 90,
+   "housing_class": "mid",
+   "retail_capacity": 0,
+   "base_rent": 8,
+   "storage_capacity": 0,
+   "allowed_terrain": [
+    "lowland",
+    "hill"
+   ],
+   "allowed_zoning": [
+    "residential",
+    "mixed"
+   ],
+   "max_slope": 40,
+   "municipal_only": false,
+   "min_reputation": 0,
+   "icon": "🏢",
+   "sort_order": 142
+  },
+  {
+   "code": "hillside_villas",
+   "name": "Villas en ladera",
+   "category": "residential",
+   "tier": 3,
+   "description": "Pocos vecinos, mucha vista. Sólo funciona en alto y con el barrio impecable.",
+   "build_cost": 560000,
+   "build_minutes": 60,
+   "build_materials": {
+    "glass": 90,
+    "lumber": 70,
+    "concrete": 80
+   },
+   "upkeep_per_tick": 50,
+   "jobs": 0,
+   "job_class": "high",
+   "base_wage": 0,
+   "power_use": 15,
+   "water_use": 40,
+   "pollution": 0,
+   "noise": 1,
+   "prestige": 18,
+   "effect_radius": 4,
+   "service": "none",
+   "service_strength": 0,
+   "housing_capacity": 10,
+   "housing_class": "high",
+   "retail_capacity": 0,
+   "base_rent": 34,
+   "storage_capacity": 0,
+   "allowed_terrain": [
+    "hill",
+    "ridge"
+   ],
+   "allowed_zoning": [
+    "residential"
+   ],
+   "max_slope": 70,
+   "municipal_only": false,
+   "min_reputation": 25,
+   "icon": "🏞️",
+   "sort_order": 143
+  },
+  {
+   "code": "corner_shop",
+   "name": "Tienda de barrio",
+   "category": "commercial",
+   "tier": 1,
+   "description": "El primer negocio de cara al público. Vive de los vecinos de dos manzanas.",
+   "build_cost": 48000,
+   "build_minutes": 15,
+   "build_materials": {
+    "brick": 20,
+    "glass": 10
+   },
+   "upkeep_per_tick": 8,
+   "jobs": 4,
+   "job_class": "low",
+   "base_wage": 3,
+   "power_use": 25,
+   "water_use": 2,
+   "pollution": 1,
+   "noise": 3,
+   "prestige": 3,
+   "effect_radius": 2,
+   "service": "none",
+   "service_strength": 0,
+   "housing_capacity": 0,
+   "housing_class": null,
+   "retail_capacity": 60,
+   "base_rent": 0,
+   "storage_capacity": 0,
+   "allowed_terrain": [
+    "lowland",
+    "hill",
+    "ridge"
+   ],
+   "allowed_zoning": [
+    "commercial",
+    "residential",
+    "mixed"
+   ],
+   "max_slope": 60,
+   "municipal_only": false,
+   "min_reputation": 0,
+   "icon": "🏪",
+   "sort_order": 150
+  },
+  {
+   "code": "supermarket",
+   "name": "Supermercado",
+   "category": "commercial",
+   "tier": 2,
+   "description": "Escala de verdad en la compra diaria, a cambio de tráfico y aparcamiento.",
+   "build_cost": 260000,
+   "build_minutes": 35,
+   "build_materials": {
+    "glass": 40,
+    "steel": 30,
+    "concrete": 70
+   },
+   "upkeep_per_tick": 40,
+   "jobs": 18,
+   "job_class": "low",
+   "base_wage": 3,
+   "power_use": 150,
+   "water_use": 8,
+   "pollution": 4,
+   "noise": 9,
+   "prestige": 1,
+   "effect_radius": 3,
+   "service": "none",
+   "service_strength": 0,
+   "housing_capacity": 0,
+   "housing_class": null,
+   "retail_capacity": 400,
+   "base_rent": 0,
+   "storage_capacity": 0,
+   "allowed_terrain": [
+    "lowland",
+    "hill"
+   ],
+   "allowed_zoning": [
+    "commercial",
+    "mixed"
+   ],
+   "max_slope": 35,
+   "municipal_only": false,
+   "min_reputation": 0,
+   "icon": "🛒",
+   "sort_order": 151
+  },
+  {
+   "code": "restaurant",
+   "name": "Restaurante",
+   "category": "commercial",
+   "tier": 1,
+   "description": "Convierte alimento en menús y una calle muerta en una calle viva.",
+   "build_cost": 95000,
+   "build_minutes": 20,
+   "build_materials": {
+    "brick": 30,
+    "glass": 20,
+    "lumber": 15
+   },
+   "upkeep_per_tick": 25,
+   "jobs": 12,
+   "job_class": "low",
+   "base_wage": 3,
+   "power_use": 75,
+   "water_use": 15,
+   "pollution": 2,
+   "noise": 7,
+   "prestige": 6,
+   "effect_radius": 2,
+   "service": "leisure",
+   "service_strength": 4,
+   "housing_capacity": 0,
+   "housing_class": null,
+   "retail_capacity": 120,
+   "base_rent": 0,
+   "storage_capacity": 0,
+   "allowed_terrain": [
+    "lowland",
+    "hill",
+    "ridge"
+   ],
+   "allowed_zoning": [
+    "commercial",
+    "mixed"
+   ],
+   "max_slope": 50,
+   "municipal_only": false,
+   "min_reputation": 0,
+   "icon": "🍽️",
+   "sort_order": 152
+  },
+  {
+   "code": "cinema",
+   "name": "Cine",
+   "category": "commercial",
+   "tier": 2,
+   "description": "Ocio de masas. Poca gente lo echa en falta hasta que no lo tiene.",
+   "build_cost": 230000,
+   "build_minutes": 35,
+   "build_materials": {
+    "glass": 30,
+    "steel": 25,
+    "concrete": 60
+   },
+   "upkeep_per_tick": 35,
+   "jobs": 8,
+   "job_class": "low",
+   "base_wage": 3,
+   "power_use": 225,
+   "water_use": 4,
+   "pollution": 1,
+   "noise": 8,
+   "prestige": 8,
+   "effect_radius": 3,
+   "service": "leisure",
+   "service_strength": 14,
+   "housing_capacity": 0,
+   "housing_class": null,
+   "retail_capacity": 300,
+   "base_rent": 0,
+   "storage_capacity": 0,
+   "allowed_terrain": [
+    "lowland",
+    "hill"
+   ],
+   "allowed_zoning": [
+    "commercial",
+    "mixed"
+   ],
+   "max_slope": 40,
+   "municipal_only": false,
+   "min_reputation": 0,
+   "icon": "🎬",
+   "sort_order": 153
+  },
+  {
+   "code": "mall",
+   "name": "Centro comercial",
+   "category": "commercial",
+   "tier": 3,
+   "description": "La pieza que reordena un distrito entero a su alrededor. Y su tráfico.",
+   "build_cost": 760000,
+   "build_minutes": 60,
+   "build_materials": {
+    "glass": 120,
+    "steel": 90,
+    "concrete": 200
+   },
+   "upkeep_per_tick": 90,
+   "jobs": 30,
+   "job_class": "mid",
+   "base_wage": 6,
+   "power_use": 600,
+   "water_use": 20,
+   "pollution": 6,
+   "noise": 14,
+   "prestige": 6,
+   "effect_radius": 5,
+   "service": "leisure",
+   "service_strength": 18,
+   "housing_capacity": 0,
+   "housing_class": null,
+   "retail_capacity": 1200,
+   "base_rent": 0,
+   "storage_capacity": 0,
+   "allowed_terrain": [
+    "lowland",
+    "hill"
+   ],
+   "allowed_zoning": [
+    "commercial"
+   ],
+   "max_slope": 30,
+   "municipal_only": false,
+   "min_reputation": 10,
+   "icon": "🏬",
+   "sort_order": 154
+  },
+  {
+   "code": "office",
+   "name": "Edificio de oficinas",
+   "category": "commercial",
+   "tier": 2,
+   "description": "No fabrica nada: alquila metros a empresas y llena el barrio de sueldos medios.",
+   "build_cost": 480000,
+   "build_minutes": 45,
+   "build_materials": {
+    "glass": 110,
+    "steel": 70,
+    "concrete": 150
+   },
+   "upkeep_per_tick": 55,
+   "jobs": 40,
+   "job_class": "mid",
+   "base_wage": 6,
+   "power_use": 200,
+   "water_use": 25,
+   "pollution": 1,
+   "noise": 5,
+   "prestige": 10,
+   "effect_radius": 3,
+   "service": "none",
+   "service_strength": 0,
+   "housing_capacity": 0,
+   "housing_class": null,
+   "retail_capacity": 220,
+   "base_rent": 7,
+   "storage_capacity": 0,
+   "allowed_terrain": [
+    "lowland",
+    "hill"
+   ],
+   "allowed_zoning": [
+    "commercial",
+    "mixed"
+   ],
+   "max_slope": 35,
+   "municipal_only": false,
+   "min_reputation": 0,
+   "icon": "🏙️",
+   "sort_order": 155
+  },
+  {
+   "code": "school",
+   "name": "Escuela",
+   "category": "civic",
+   "tier": 1,
+   "description": "Sin escuelas no hay mano de obra cualificada. Es inversión, no gasto.",
+   "build_cost": 320000,
+   "build_minutes": 45,
+   "build_materials": {
+    "brick": 70,
+    "glass": 40,
+    "concrete": 90
+   },
+   "upkeep_per_tick": 60,
+   "jobs": 24,
+   "job_class": "mid",
+   "base_wage": 6,
+   "power_use": 80,
+   "water_use": 30,
+   "pollution": 0,
+   "noise": 6,
+   "prestige": 8,
+   "effect_radius": 4,
+   "service": "education",
+   "service_strength": 30,
+   "housing_capacity": 0,
+   "housing_class": null,
+   "retail_capacity": 0,
+   "base_rent": 0,
+   "storage_capacity": 0,
+   "allowed_terrain": [
+    "lowland",
+    "hill",
+    "ridge"
+   ],
+   "allowed_zoning": [
+    "civic",
+    "residential",
+    "mixed"
+   ],
+   "max_slope": 45,
+   "municipal_only": true,
+   "min_reputation": 0,
+   "icon": "🏫",
+   "sort_order": 160
+  },
+  {
+   "code": "hospital",
+   "name": "Hospital",
+   "category": "civic",
+   "tier": 2,
+   "description": "Caro de mantener e imprescindible: la felicidad se desploma sin él.",
+   "build_cost": 880000,
+   "build_minutes": 70,
+   "build_materials": {
+    "glass": 90,
+    "steel": 110,
+    "concrete": 220
+   },
+   "upkeep_per_tick": 160,
+   "jobs": 60,
+   "job_class": "high",
+   "base_wage": 12,
+   "power_use": 500,
+   "water_use": 90,
+   "pollution": 3,
+   "noise": 10,
+   "prestige": 12,
+   "effect_radius": 6,
+   "service": "health",
+   "service_strength": 45,
+   "housing_capacity": 0,
+   "housing_class": null,
+   "retail_capacity": 0,
+   "base_rent": 0,
+   "storage_capacity": 0,
+   "allowed_terrain": [
+    "lowland",
+    "hill"
+   ],
+   "allowed_zoning": [
+    "civic",
+    "mixed"
+   ],
+   "max_slope": 35,
+   "municipal_only": true,
+   "min_reputation": 0,
+   "icon": "🏥",
+   "sort_order": 161
+  },
+  {
+   "code": "police_station",
+   "name": "Comisaría",
+   "category": "civic",
+   "tier": 1,
+   "description": "Baja la criminalidad del entorno. Nadie la quiere justo debajo de casa.",
+   "build_cost": 260000,
+   "build_minutes": 35,
+   "build_materials": {
+    "brick": 50,
+    "concrete": 70
+   },
+   "upkeep_per_tick": 70,
+   "jobs": 30,
+   "job_class": "mid",
+   "base_wage": 6,
+   "power_use": 90,
+   "water_use": 15,
+   "pollution": 0,
+   "noise": 7,
+   "prestige": 2,
+   "effect_radius": 5,
+   "service": "safety",
+   "service_strength": 32,
+   "housing_capacity": 0,
+   "housing_class": null,
+   "retail_capacity": 0,
+   "base_rent": 0,
+   "storage_capacity": 0,
+   "allowed_terrain": [
+    "lowland",
+    "hill",
+    "ridge"
+   ],
+   "allowed_zoning": [
+    "civic",
+    "residential",
+    "commercial",
+    "mixed"
+   ],
+   "max_slope": 50,
+   "municipal_only": true,
+   "min_reputation": 0,
+   "icon": "🚓",
+   "sort_order": 162
+  },
+  {
+   "code": "park",
+   "name": "Parque",
+   "category": "civic",
+   "tier": 0,
+   "description": "No produce nada y es de lo más rentable que puede hacer un municipio: limpia el aire y revaloriza cuatro manzanas.",
+   "build_cost": 90000,
+   "build_minutes": 20,
+   "build_materials": {
+    "lumber": 30
+   },
+   "upkeep_per_tick": 25,
+   "jobs": 4,
+   "job_class": "low",
+   "base_wage": 3,
+   "power_use": 5,
+   "water_use": 60,
+   "pollution": -14,
+   "noise": -8,
+   "prestige": 16,
+   "effect_radius": 4,
+   "service": "leisure",
+   "service_strength": 20,
+   "housing_capacity": 0,
+   "housing_class": null,
+   "retail_capacity": 0,
+   "base_rent": 0,
+   "storage_capacity": 0,
+   "allowed_terrain": [
+    "lowland",
+    "hill",
+    "ridge",
+    "forest"
+   ],
+   "allowed_zoning": [
+    "civic",
+    "residential",
+    "commercial",
+    "mixed",
+    "protected"
+   ],
+   "max_slope": 60,
+   "municipal_only": true,
+   "min_reputation": 0,
+   "icon": "🌳",
+   "sort_order": 163
+  },
+  {
+   "code": "bus_station",
+   "name": "Estación de autobuses",
+   "category": "civic",
+   "tier": 1,
+   "description": "Transporte barato. Amplía el radio desde el que tus fábricas pueden contratar.",
+   "build_cost": 180000,
+   "build_minutes": 30,
+   "build_materials": {
+    "steel": 30,
+    "concrete": 60
+   },
+   "upkeep_per_tick": 55,
+   "jobs": 14,
+   "job_class": "low",
+   "base_wage": 3,
+   "power_use": 60,
+   "water_use": 10,
+   "pollution": 4,
+   "noise": 12,
+   "prestige": 0,
+   "effect_radius": 5,
+   "service": "transport",
+   "service_strength": 24,
+   "housing_capacity": 0,
+   "housing_class": null,
+   "retail_capacity": 0,
+   "base_rent": 0,
+   "storage_capacity": 0,
+   "allowed_terrain": [
+    "lowland",
+    "hill"
+   ],
+   "allowed_zoning": [
+    "civic",
+    "commercial",
+    "mixed"
+   ],
+   "max_slope": 30,
+   "municipal_only": true,
+   "min_reputation": 0,
+   "icon": "🚌",
+   "sort_order": 164
+  },
+  {
+   "code": "metro_station",
+   "name": "Estación de metro",
+   "category": "civic",
+   "tier": 3,
+   "description": "La infraestructura que más revaloriza el suelo del juego. Y la que más cuesta.",
+   "build_cost": 1400000,
+   "build_minutes": 90,
+   "build_materials": {
+    "steel": 220,
+    "concrete": 400,
+    "machinery": 10
+   },
+   "upkeep_per_tick": 200,
+   "jobs": 26,
+   "job_class": "mid",
+   "base_wage": 6,
+   "power_use": 900,
+   "water_use": 40,
+   "pollution": 2,
+   "noise": 8,
+   "prestige": 22,
+   "effect_radius": 7,
+   "service": "transport",
+   "service_strength": 55,
+   "housing_capacity": 0,
+   "housing_class": null,
+   "retail_capacity": 0,
+   "base_rent": 0,
+   "storage_capacity": 0,
+   "allowed_terrain": [
+    "lowland",
+    "hill"
+   ],
+   "allowed_zoning": [
+    "civic",
+    "commercial",
+    "residential",
+    "mixed"
+   ],
+   "max_slope": 25,
+   "municipal_only": true,
+   "min_reputation": 0,
+   "icon": "🚇",
+   "sort_order": 165
+  },
+  {
+   "code": "water_treatment",
+   "name": "Depuradora",
+   "category": "civic",
+   "tier": 2,
+   "description": "Trata lo que la ciudad tira. Fea, olorosa y la única forma de crecer sin ahogarse.",
+   "build_cost": 520000,
+   "build_minutes": 50,
+   "build_materials": {
+    "steel": 80,
+    "concrete": 160
+   },
+   "upkeep_per_tick": 110,
+   "jobs": 18,
+   "job_class": "mid",
+   "base_wage": 6,
+   "power_use": 700,
+   "water_use": 0,
+   "pollution": -22,
+   "noise": 10,
+   "prestige": -10,
+   "effect_radius": 5,
+   "service": "utility",
+   "service_strength": 30,
+   "housing_capacity": 0,
+   "housing_class": null,
+   "retail_capacity": 0,
+   "base_rent": 0,
+   "storage_capacity": 0,
+   "allowed_terrain": [
+    "lowland",
+    "water"
+   ],
+   "allowed_zoning": [
+    "civic",
+    "industrial"
+   ],
+   "max_slope": 20,
+   "municipal_only": true,
+   "min_reputation": 0,
+   "icon": "♻️",
+   "sort_order": 166
+  },
+  {
+   "code": "recycling_plant",
+   "name": "Planta de reciclaje",
+   "category": "civic",
+   "tier": 2,
+   "description": "Rebaja la contaminación del distrito sin obligar a cerrar ninguna fábrica.",
+   "build_cost": 410000,
+   "build_minutes": 45,
+   "build_materials": {
+    "steel": 70,
+    "concrete": 120
+   },
+   "upkeep_per_tick": 95,
+   "jobs": 20,
+   "job_class": "low",
+   "base_wage": 3,
+   "power_use": 400,
+   "water_use": 15,
+   "pollution": -28,
+   "noise": 14,
+   "prestige": -12,
+   "effect_radius": 5,
+   "service": "utility",
+   "service_strength": 22,
+   "housing_capacity": 0,
+   "housing_class": null,
+   "retail_capacity": 0,
+   "base_rent": 0,
+   "storage_capacity": 0,
+   "allowed_terrain": [
+    "lowland",
+    "hill",
+    "rock"
+   ],
+   "allowed_zoning": [
+    "civic",
+    "industrial"
+   ],
+   "max_slope": 35,
+   "municipal_only": true,
+   "min_reputation": 0,
+   "icon": "🔄",
+   "sort_order": 167
+  },
+  {
+   "code": "warehouse",
+   "name": "Almacén",
+   "category": "logistics",
+   "tier": 1,
+   "description": "Sin almacén no hay stock, y sin stock no hay forma de esperar a un buen precio.",
+   "build_cost": 85000,
+   "build_minutes": 20,
+   "build_materials": {
+    "steel": 20,
+    "concrete": 40
+   },
+   "upkeep_per_tick": 15,
+   "jobs": 4,
+   "job_class": "low",
+   "base_wage": 3,
+   "power_use": 15,
+   "water_use": 2,
+   "pollution": 1,
+   "noise": 4,
+   "prestige": -2,
+   "effect_radius": 2,
+   "service": "none",
+   "service_strength": 0,
+   "housing_capacity": 0,
+   "housing_class": null,
+   "retail_capacity": 0,
+   "base_rent": 0,
+   "storage_capacity": 8000,
+   "allowed_terrain": [
+    "lowland",
+    "hill"
+   ],
+   "allowed_zoning": [
+    "industrial",
+    "commercial",
+    "mixed"
+   ],
+   "max_slope": 40,
+   "municipal_only": false,
+   "min_reputation": 0,
+   "icon": "📦",
+   "sort_order": 170
+  },
+  {
+   "code": "logistics_hub",
+   "name": "Centro logístico",
+   "category": "logistics",
+   "tier": 2,
+   "description": "Almacén grande más flota propia: amplía tu alcance de contratación y de reparto.",
+   "build_cost": 340000,
+   "build_minutes": 40,
+   "build_materials": {
+    "steel": 80,
+    "concrete": 140
+   },
+   "upkeep_per_tick": 55,
+   "jobs": 12,
+   "job_class": "low",
+   "base_wage": 3,
+   "power_use": 120,
+   "water_use": 8,
+   "pollution": 6,
+   "noise": 16,
+   "prestige": -6,
+   "effect_radius": 4,
+   "service": "transport",
+   "service_strength": 12,
+   "housing_capacity": 0,
+   "housing_class": null,
+   "retail_capacity": 0,
+   "base_rent": 0,
+   "storage_capacity": 32000,
+   "allowed_terrain": [
+    "lowland",
+    "hill"
+   ],
+   "allowed_zoning": [
+    "industrial"
+   ],
+   "max_slope": 30,
+   "municipal_only": false,
+   "min_reputation": 0,
+   "icon": "🚚",
+   "sort_order": 171
+  }
+ ],
+ "recipes": [
+  {
+   "id": "brick",
+   "building_code": "brickworks",
+   "name": "Cocer ladrillo",
+   "output_code": "brick",
+   "output_qty": 10,
+   "minutes": 20,
+   "labor_factor": 1,
+   "power_use": 400,
+   "water_use": 40,
+   "min_level": 1,
+   "sort_order": 1,
+   "inputs": [
+    {
+     "resource_code": "clay",
+     "qty": 15
+    }
+   ]
+  },
+  {
+   "id": "cement",
+   "building_code": "cement_plant",
+   "name": "Calcinar cemento",
+   "output_code": "cement",
+   "output_qty": 12,
+   "minutes": 20,
+   "labor_factor": 1,
+   "power_use": 800,
+   "water_use": 40,
+   "min_level": 1,
+   "sort_order": 1,
+   "inputs": [
+    {
+     "resource_code": "stone",
+     "qty": 18
+    }
+   ]
+  },
+  {
+   "id": "cinema_leisure",
+   "building_code": "cinema",
+   "name": "Programar sesiones",
+   "output_code": "leisure",
+   "output_qty": 26,
+   "minutes": 20,
+   "labor_factor": 1,
+   "power_use": 900,
+   "water_use": 20,
+   "min_level": 1,
+   "sort_order": 1,
+   "inputs": []
+  },
+  {
+   "id": "clay_clay",
+   "building_code": "clay_pit",
+   "name": "Extraer arcilla",
+   "output_code": "clay",
+   "output_qty": 20,
+   "minutes": 20,
+   "labor_factor": 1,
+   "power_use": 30,
+   "water_use": 20,
+   "min_level": 1,
+   "sort_order": 1,
+   "inputs": []
+  },
+  {
+   "id": "coal_coal",
+   "building_code": "coal_mine",
+   "name": "Extraer carbón",
+   "output_code": "coal",
+   "output_qty": 14,
+   "minutes": 20,
+   "labor_factor": 1,
+   "power_use": 220,
+   "water_use": 40,
+   "min_level": 1,
+   "sort_order": 1,
+   "inputs": []
+  },
+  {
+   "id": "coal_power",
+   "building_code": "coal_plant",
+   "name": "Generar (carbón)",
+   "output_code": "power",
+   "output_qty": 32000,
+   "minutes": 20,
+   "labor_factor": 1,
+   "power_use": 0,
+   "water_use": 400,
+   "min_level": 1,
+   "sort_order": 1,
+   "inputs": [
+    {
+     "resource_code": "coal",
+     "qty": 20
+    }
+   ]
+  },
+  {
+   "id": "components",
+   "building_code": "component_factory",
+   "name": "Montar componentes",
+   "output_code": "components",
+   "output_qty": 60,
+   "minutes": 30,
+   "labor_factor": 1,
+   "power_use": 1800,
+   "water_use": 60,
+   "min_level": 1,
+   "sort_order": 1,
+   "inputs": [
+    {
+     "resource_code": "steel",
+     "qty": 3
+    },
+    {
+     "resource_code": "plastic",
+     "qty": 1.5
+    }
+   ]
+  },
+  {
+   "id": "concrete",
+   "building_code": "concrete_plant",
+   "name": "Amasar hormigón",
+   "output_code": "concrete",
+   "output_qty": 6,
+   "minutes": 20,
+   "labor_factor": 1,
+   "power_use": 120,
+   "water_use": 60,
+   "min_level": 1,
+   "sort_order": 1,
+   "inputs": [
+    {
+     "resource_code": "cement",
+     "qty": 3
+    },
+    {
+     "resource_code": "sand",
+     "qty": 4
+    }
+   ]
+  },
+  {
+   "id": "shop_groceries",
+   "building_code": "corner_shop",
+   "name": "Despachar la compra",
+   "output_code": "groceries",
+   "output_qty": 16,
+   "minutes": 20,
+   "labor_factor": 1,
+   "power_use": 100,
+   "water_use": 10,
+   "min_level": 1,
+   "sort_order": 1,
+   "inputs": [
+    {
+     "resource_code": "food",
+     "qty": 0.4
+    }
+   ]
+  },
+  {
+   "id": "electronics",
+   "building_code": "electronics_factory",
+   "name": "Ensamblar aparatos",
+   "output_code": "electronics",
+   "output_qty": 30,
+   "minutes": 30,
+   "labor_factor": 1,
+   "power_use": 3600,
+   "water_use": 60,
+   "min_level": 1,
+   "sort_order": 1,
+   "inputs": [
+    {
+     "resource_code": "components",
+     "qty": 40
+    },
+    {
+     "resource_code": "glass",
+     "qty": 20
+    },
+    {
+     "resource_code": "plastic",
+     "qty": 1
+    }
+   ]
+  },
+  {
+   "id": "farm_crops",
+   "building_code": "farm",
+   "name": "Cosechar",
+   "output_code": "crops",
+   "output_qty": 16,
+   "minutes": 30,
+   "labor_factor": 1,
+   "power_use": 90,
+   "water_use": 800,
+   "min_level": 1,
+   "sort_order": 1,
+   "inputs": []
+  },
+  {
+   "id": "food",
+   "building_code": "food_plant",
+   "name": "Procesar alimento",
+   "output_code": "food",
+   "output_qty": 8,
+   "minutes": 20,
+   "labor_factor": 1,
+   "power_use": 600,
+   "water_use": 200,
+   "min_level": 1,
+   "sort_order": 1,
+   "inputs": [
+    {
+     "resource_code": "crops",
+     "qty": 10
+    }
+   ]
+  },
+  {
+   "id": "furniture",
+   "building_code": "furniture_factory",
+   "name": "Fabricar muebles",
+   "output_code": "furniture",
+   "output_qty": 8,
+   "minutes": 30,
+   "labor_factor": 1,
+   "power_use": 400,
+   "water_use": 30,
+   "min_level": 1,
+   "sort_order": 1,
+   "inputs": [
+    {
+     "resource_code": "lumber",
+     "qty": 5
+    },
+    {
+     "resource_code": "components",
+     "qty": 8
+    }
+   ]
+  },
+  {
+   "id": "glass",
+   "building_code": "glassworks",
+   "name": "Fundir vidrio",
+   "output_code": "glass",
+   "output_qty": 12,
+   "minutes": 20,
+   "labor_factor": 1,
+   "power_use": 1200,
+   "water_use": 80,
+   "min_level": 1,
+   "sort_order": 1,
+   "inputs": [
+    {
+     "resource_code": "sand",
+     "qty": 12
+    }
+   ]
+  },
+  {
+   "id": "iron_ore",
+   "building_code": "iron_mine",
+   "name": "Extraer mineral",
+   "output_code": "iron_ore",
+   "output_qty": 14,
+   "minutes": 20,
+   "labor_factor": 1,
+   "power_use": 220,
+   "water_use": 40,
+   "min_level": 1,
+   "sort_order": 1,
+   "inputs": []
+  },
+  {
+   "id": "lumber",
+   "building_code": "lumber_mill",
+   "name": "Aserrar tablones",
+   "output_code": "lumber",
+   "output_qty": 10,
+   "minutes": 20,
+   "labor_factor": 1,
+   "power_use": 300,
+   "water_use": 20,
+   "min_level": 1,
+   "sort_order": 1,
+   "inputs": [
+    {
+     "resource_code": "timber",
+     "qty": 14
+    }
+   ]
+  },
+  {
+   "id": "machinery",
+   "building_code": "machinery_factory",
+   "name": "Fabricar maquinaria",
+   "output_code": "machinery",
+   "output_qty": 10,
+   "minutes": 60,
+   "labor_factor": 1,
+   "power_use": 7200,
+   "water_use": 100,
+   "min_level": 1,
+   "sort_order": 1,
+   "inputs": [
+    {
+     "resource_code": "steel",
+     "qty": 12
+    },
+    {
+     "resource_code": "components",
+     "qty": 100
+    },
+    {
+     "resource_code": "electronics",
+     "qty": 16
+    }
+   ]
+  },
+  {
+   "id": "mall_leisure",
+   "building_code": "mall",
+   "name": "Ocio y restauración",
+   "output_code": "leisure",
+   "output_qty": 90,
+   "minutes": 20,
+   "labor_factor": 0.6,
+   "power_use": 2400,
+   "water_use": 80,
+   "min_level": 1,
+   "sort_order": 1,
+   "inputs": []
+  },
+  {
+   "id": "mall_groceries",
+   "building_code": "mall",
+   "name": "Gran superficie",
+   "output_code": "groceries",
+   "output_qty": 110,
+   "minutes": 20,
+   "labor_factor": 0.6,
+   "power_use": 2000,
+   "water_use": 80,
+   "min_level": 1,
+   "sort_order": 2,
+   "inputs": [
+    {
+     "resource_code": "food",
+     "qty": 3
+    }
+   ]
+  },
+  {
+   "id": "oil_crude",
+   "building_code": "oil_well",
+   "name": "Bombear crudo",
+   "output_code": "crude_oil",
+   "output_qty": 18,
+   "minutes": 20,
+   "labor_factor": 1,
+   "power_use": 340,
+   "water_use": 60,
+   "min_level": 1,
+   "sort_order": 1,
+   "inputs": []
+  },
+  {
+   "id": "quarry_stone",
+   "building_code": "quarry",
+   "name": "Extraer piedra",
+   "output_code": "stone",
+   "output_qty": 24,
+   "minutes": 20,
+   "labor_factor": 1,
+   "power_use": 40,
+   "water_use": 0,
+   "min_level": 1,
+   "sort_order": 1,
+   "inputs": []
+  },
+  {
+   "id": "quarry_sand",
+   "building_code": "quarry",
+   "name": "Extraer arena",
+   "output_code": "sand",
+   "output_qty": 26,
+   "minutes": 20,
+   "labor_factor": 0.9,
+   "power_use": 30,
+   "water_use": 0,
+   "min_level": 1,
+   "sort_order": 2,
+   "inputs": []
+  },
+  {
+   "id": "fuel",
+   "building_code": "refinery",
+   "name": "Refinar combustible",
+   "output_code": "fuel",
+   "output_qty": 7000,
+   "minutes": 30,
+   "labor_factor": 1,
+   "power_use": 3000,
+   "water_use": 400,
+   "min_level": 1,
+   "sort_order": 1,
+   "inputs": [
+    {
+     "resource_code": "crude_oil",
+     "qty": 90
+    }
+   ]
+  },
+  {
+   "id": "plastic",
+   "building_code": "refinery",
+   "name": "Producir plástico",
+   "output_code": "plastic",
+   "output_qty": 48,
+   "minutes": 30,
+   "labor_factor": 1,
+   "power_use": 2500,
+   "water_use": 300,
+   "min_level": 1,
+   "sort_order": 2,
+   "inputs": [
+    {
+     "resource_code": "crude_oil",
+     "qty": 50
+    }
+   ]
+  },
+  {
+   "id": "restaurant_meals",
+   "building_code": "restaurant",
+   "name": "Servir menús",
+   "output_code": "meals",
+   "output_qty": 40,
+   "minutes": 20,
+   "labor_factor": 1,
+   "power_use": 300,
+   "water_use": 60,
+   "min_level": 1,
+   "sort_order": 1,
+   "inputs": [
+    {
+     "resource_code": "food",
+     "qty": 1.2
+    }
+   ]
+  },
+  {
+   "id": "sawmill_timber",
+   "building_code": "sawmill",
+   "name": "Talar y descortezar",
+   "output_code": "timber",
+   "output_qty": 12,
+   "minutes": 20,
+   "labor_factor": 1,
+   "power_use": 50,
+   "water_use": 0,
+   "min_level": 1,
+   "sort_order": 1,
+   "inputs": []
+  },
+  {
+   "id": "solar_power",
+   "building_code": "solar_farm",
+   "name": "Generar (solar)",
+   "output_code": "power",
+   "output_qty": 4200,
+   "minutes": 20,
+   "labor_factor": 1,
+   "power_use": 0,
+   "water_use": 0,
+   "min_level": 1,
+   "sort_order": 1,
+   "inputs": []
+  },
+  {
+   "id": "steel",
+   "building_code": "steel_mill",
+   "name": "Colar acero",
+   "output_code": "steel",
+   "output_qty": 22,
+   "minutes": 30,
+   "labor_factor": 1,
+   "power_use": 4500,
+   "water_use": 300,
+   "min_level": 1,
+   "sort_order": 1,
+   "inputs": [
+    {
+     "resource_code": "iron_ore",
+     "qty": 24
+    },
+    {
+     "resource_code": "coal",
+     "qty": 12
+    }
+   ]
+  },
+  {
+   "id": "super_groceries",
+   "building_code": "supermarket",
+   "name": "Despachar la compra",
+   "output_code": "groceries",
+   "output_qty": 50,
+   "minutes": 20,
+   "labor_factor": 1,
+   "power_use": 600,
+   "water_use": 40,
+   "min_level": 1,
+   "sort_order": 1,
+   "inputs": [
+    {
+     "resource_code": "food",
+     "qty": 1.4
+    }
+   ]
+  },
+  {
+   "id": "water_supply",
+   "building_code": "water_plant",
+   "name": "Potabilizar",
+   "output_code": "water",
+   "output_qty": 1200,
+   "minutes": 10,
+   "labor_factor": 1,
+   "power_use": 240,
+   "water_use": 0,
+   "min_level": 1,
+   "sort_order": 1,
+   "inputs": []
+  },
+  {
+   "id": "wind_power",
+   "building_code": "wind_farm",
+   "name": "Generar (eólica)",
+   "output_code": "power",
+   "output_qty": 6500,
+   "minutes": 20,
+   "labor_factor": 1,
+   "power_use": 0,
+   "water_use": 0,
+   "min_level": 1,
+   "sort_order": 1,
+   "inputs": []
+  }
+ ]
+}

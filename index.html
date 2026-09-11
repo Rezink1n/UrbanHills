@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>UrbanHills — simulación de ciudad</title>
+  <meta name="description" content="Juego online de simulación económica y urbana: compra suelo, construye y haz crecer una ciudad sobre colinas.">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#0d1117">
+
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏙️</text></svg>">
+  <link rel="stylesheet" href="./src/css/tokens.css">
+  <link rel="stylesheet" href="./src/css/base.css">
+  <link rel="stylesheet" href="./src/css/app.css">
+</head>
+<body>
+  <!-- El router pinta aquí dentro. Sin framework: una vista, un módulo. -->
+  <div id="app" class="app">
+    <div class="boot">
+      <div class="boot__mark">🏙️</div>
+      <p class="boot__text">Cargando UrbanHills…</p>
+      <noscript>
+        <p class="boot__text">
+          UrbanHills necesita JavaScript. Actívalo para jugar.
+        </p>
+      </noscript>
+    </div>
+  </div>
+
+  <div id="toasts" class="toasts" aria-live="polite" aria-atomic="false"></div>
+
+  <script type="module" src="./src/js/main.js"></script>
+</body>
+</html>
