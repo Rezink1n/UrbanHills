@@ -91,6 +91,33 @@ acotado entre el 40 % y el 400 % del precio ancla.
 Es más simple que un segundo libro de órdenes y modela mejor lo que es: un
 suministro continuo, no un bien que guardas en un almacén.
 
+La lista de lo que va por red vive en un solo sitio, `game.grid_resources()`, y
+son exactamente dos: `power` y `water`. Todo lo demás se negocia en el mercado,
+**incluidos los bienes que consume la población** (la compra diaria, los menús,
+el ocio). Al principio no era así y el resultado fue que la mayor demanda del
+juego no la podía servir nadie: ver el fallo 1 en [ROADMAP.md](./ROADMAP.md).
+
+### Importaciones municipales
+
+Los materiales de obra se necesitan entre sí en círculo —el acero pide hormigón
+y ladrillo, el hormigón pide acero, el ladrillo pide acero— así que en un mundo
+recién creado no se podía levantar ninguna de las tres fábricas.
+
+`game.tick_imports()` lo resuelve poniendo a la venta, cada tick, un cupo
+limitado de `cement`, `brick`, `glass`, `steel`, `lumber` y `concrete` al 135 %
+del precio ancla, como órdenes NPC de venta (`is_npc = true`, `side = 'sell'`).
+
+Hace tres cosas a la vez:
+
+- **desbloquea el arranque**: se puede construir desde el primer minuto;
+- **pone techo al precio**: nadie puede estrangular el mercado del acero,
+  porque siempre queda la alternativa de importar;
+- **se apaga solo**: producir en la ciudad es más barato que importar, así que
+  la industria local gana en cuanto existe.
+
+El cupo caduca cada tick y no se acumula: si no, un mundo tranquilo amasaría un
+almacén infinito de acero barato.
+
 ### `tick_log` — idempotencia
 
 `fn_world_tick()` empieza insertando `(world_id, tick)` en esta tabla. Si la
@@ -111,3 +138,26 @@ No existe ni una sola política de `INSERT`, `UPDATE` o `DELETE` sobre las
 tablas económicas. Las funciones RPC son `SECURITY DEFINER`, así que corren
 como el dueño de las tablas y se saltan RLS legítimamente, después de validar
 `auth.uid()` contra la propiedad de la empresa.
+
+
+## Los dos avisos del linter que son intencionados
+
+El linter de seguridad de Supabase deja dos avisos permanentes. Los dos
+describen decisiones tomadas a propósito, así que no hay que "arreglarlos":
+
+**`rls_enabled_no_policy` en `action_log`** (INFO). La tabla tiene RLS activo y
+ninguna política. Eso significa que nadie la puede leer por la API, que es
+exactamente lo que se busca: es telemetría del freno antiabuso y sólo la escribe
+`game.rate_limit()` desde una función `SECURITY DEFINER`.
+
+**`authenticated_security_definer_function_executable` en las 10 RPC** (WARN).
+El linter avisa de que un usuario autenticado puede invocar funciones
+`SECURITY DEFINER` a través de `/rest/v1/rpc/…`. Eso no es un descuido: **es la
+arquitectura**. Los jugadores no escriben en ninguna tabla; actúan únicamente a
+través de esas diez funciones, que validan propiedad, caja y reglas antes de
+tocar nada. Pasarlas a `SECURITY INVOKER` o revocar el `EXECUTE` dejaría el
+juego sin ninguna acción posible.
+
+Todo lo demás está en verde: `search_path` fijado en las 13 funciones
+auxiliares, RLS en las 30 tablas, y cero permisos de escritura sobre tablas o
+vistas para `anon` y `authenticated`.

@@ -19,6 +19,9 @@ declare
   v_co2     uuid;
   v_stone2  numeric;
   v_order   uuid;
+  v_b2      uuid;
+  v_plot2   uuid;
+  v_groc    numeric;
 begin
   raise notice '--- Generando mundo 32x32 ---';
   v_world := game.generate_world('test', 'Mundo de pruebas', 424242, 32, 32, 8, 250000);
@@ -162,6 +165,95 @@ begin
     (select sum(qty) from market_trades), (select max(unit_price) from market_trades);
 
   perform set_config('request.jwt.claim.sub', v_user::text, false);
+
+  -- ── Regresión 1 ────────────────────────────────────────────────────────────
+  -- El puerto tiene que ofrecer materiales. Sin esto, en un mundo nuevo no se
+  -- puede levantar nada que lleve ladrillo, acero u hormigón, porque los tres
+  -- se necesitan entre sí en círculo.
+  raise notice '--- Importaciones municipales ---';
+  perform game.tick_imports(v_world);
+
+  if not exists (select 1 from market_orders
+                  where world_id = v_world and is_npc and side = 'sell'
+                    and resource_code = 'brick' and status = 'open') then
+    raise exception 'FALLO: el puerto no ofrece ladrillo; el mundo no puede arrancar';
+  end if;
+  raise notice 'ok: el puerto ofrece % materiales',
+    (select count(*) from market_orders
+      where world_id = v_world and is_npc and side='sell' and status='open');
+
+  -- ── Regresión 2 ────────────────────────────────────────────────────────────
+  -- Los bienes que consume la población tienen que ser vendibles. Estuvieron
+  -- marcados como no almacenables, y `rpc_place_order` los rechazaba: la mayor
+  -- demanda del juego era inalcanzable para cualquier jugador.
+  raise notice '--- Bienes de consumo: producir y vender a la población ---';
+
+  perform rpc_place_order(v_world, 'brick', 'buy', 20, 90.00);
+  perform rpc_place_order(v_world, 'glass', 'buy', 10, 100.00);
+
+  if (select coalesce(qty,0) from inventories
+       where company_id = v_co and resource_code = 'brick') < 20 then
+    raise exception 'FALLO: la importación de ladrillo no se ejecutó';
+  end if;
+  raise notice 'ok: materiales importados y en almacén';
+
+  select p.id into v_plot2 from plots p
+   where p.world_id = v_world and p.owner_company_id is null and p.for_sale
+     and p.terrain in ('lowland','hill','ridge')
+     and p.zoning in ('commercial','residential','mixed')
+     and p.slope <= 60
+   order by p.land_value asc limit 1;
+
+  perform rpc_buy_plot(v_plot2);
+  v_res := rpc_build(v_plot2, 'corner_shop');
+  v_b2 := (v_res ->> 'building_id')::uuid;
+
+  update buildings set ready_at = now() - interval '1 second' where id = v_b2;
+  update worlds set last_tick_at = null where id = v_world;
+  perform fn_world_tick('test');
+
+  perform game.inventory_add(v_co, 'food', 40, 120);
+  perform rpc_produce(v_b2, 'shop_groceries', 2, false);
+  update buildings set run_ends_at = now() - interval '1 second' where id = v_b2;
+  update worlds set last_tick_at = null where id = v_world;
+  perform fn_world_tick('test');
+
+  select qty into v_groc from inventories
+   where company_id = v_co and resource_code = 'groceries';
+  if coalesce(v_groc, 0) <= 0 then
+    raise exception 'FALLO: la tienda no produjo cestas';
+  end if;
+
+  -- trunc, no round: pedir más de lo que hay debe fallar, y falla.
+  perform rpc_place_order(v_world, 'groceries', 'sell', trunc(v_groc, 2), 23.00);
+  perform game.match_market(v_world, 'groceries');
+
+  if not exists (select 1 from market_trades
+                  where world_id = v_world and resource_code = 'groceries'
+                    and seller_company_id = v_co) then
+    raise exception 'FALLO: la población no pudo comprar las cestas';
+  end if;
+  raise notice 'ok: la población compró % cestas',
+    (select round(sum(qty),1) from market_trades
+      where resource_code='groceries' and seller_company_id = v_co);
+
+  -- La luz y el agua siguen fuera del mercado: van por red.
+  begin
+    perform rpc_place_order(v_world, 'power', 'sell', 10, 0.10);
+    raise exception 'FALLO: dejó negociar electricidad en el mercado';
+  exception when sqlstate 'P0001' then
+    raise notice 'ok: la luz no se negocia, va por red';
+  end;
+
+  -- ── Regresión 3 ────────────────────────────────────────────────────────────
+  -- El municipio sólo paga el mantenimiento de lo público, no el de los
+  -- edificios que se quedaron sin dueño.
+  if (select count(*) from buildings b
+        join building_types bt on bt.code = b.type_code
+       where b.world_id = v_world and bt.municipal_only) > 0 then
+    raise exception 'FALLO: hay edificios municipales donde no debería';
+  end if;
+  raise notice 'ok: el municipio no paga edificios privados';
 
   raise notice '--- 5 ticks seguidos ---';
   for i in 1..5 loop

@@ -13,8 +13,9 @@
  * cliente: da acceso total y salta la seguridad a nivel de fila.
  * ========================================================================== */
 
-export const SUPABASE_URL      = '';
-export const SUPABASE_ANON_KEY = '';
+export const SUPABASE_URL      = 'https://nviwpcehgltwfhjnphas.supabase.co';
+export const SUPABASE_ANON_KEY =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im52aXdwY2VoZ2x0d2Zoam5waGFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkxMzM3NDQsImV4cCI6MjEwNDcwOTc0NH0.usXmGGr2z3R1kqU6WVW-c0mtGrWoJaCsrX-ArqOzvOE';
 
 /** Código del mundo (partida) al que se conecta este despliegue. */
 export const WORLD_CODE = 'alpha';

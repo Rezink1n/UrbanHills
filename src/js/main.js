@@ -65,10 +65,10 @@ async function main() {
 
   await startRouter(app);
 
-  // Sin empresa, todas las rutas de juego llevan a fundarla: es la única
-  // acción posible y así no hay pantallas vacías sin salida.
+  // Sin empresa no hay nada que hacer en las pantallas de juego. A dónde se
+  // manda al visitante depende de qué le falta: identificarse, o fundar.
   if (!state.company && ['/mapa', '/empresa', '/mercado'].includes(currentRoute())) {
-    navigate('/empezar', { replace: true });
+    navigate(needsLogin() ? '/entrar' : '/empezar', { replace: true });
   }
 
   wireTicks();
@@ -115,6 +115,11 @@ function wireLiveHeader() {
       });
     }
   });
+}
+
+/** En modo demo no hay cuentas; con Supabase, hace falta sesión para jugar. */
+function needsLogin() {
+  return state.mode === 'supabase' && !state.session;
 }
 
 main();

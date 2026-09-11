@@ -460,8 +460,7 @@ begin
   ),
   pop as (
     select pc.district_id,
-           sum(pc.count)::int as population,
-           sum(case when pc.class = 'low'  then pc.count else 0 end)::int as pop_low
+           sum(pc.count)::int as population
       from population_cohorts pc
       join districts d on d.id = pc.district_id
      where d.world_id = p_world

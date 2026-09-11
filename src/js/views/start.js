@@ -12,6 +12,12 @@ export default function start() {
     return '<div class="boot"><p class="boot__text">Entrando…</p></div>';
   }
 
+  // Fundar empresa exige sesión: la RPC valida auth.uid().
+  if (state.mode === 'supabase' && !state.session) {
+    navigate('/entrar', { replace: true });
+    return '<div class="boot"><p class="boot__text">Identifícate para jugar…</p></div>';
+  }
+
   const cash = state.world?.starting_cash ?? 250000;
 
   return {

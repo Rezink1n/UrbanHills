@@ -496,16 +496,36 @@ function runTick() {
   for (const fn of tickListeners) fn({ tick: db.world.current_tick });
 }
 
-/** Ejecuta contra la red lo que cruce el precio de referencia. */
+/**
+ * Materiales que en la partida real importa el puerto, con su sobreprecio.
+ * Ver game.imported_resources() en supabase/migrations/0017_imports.sql.
+ */
+const IMPORTED = ['cement', 'brick', 'glass', 'steel', 'lumber', 'concrete'];
+const IMPORT_MARKUP = 1.35;
+
+/**
+ * En demo no hay contraparte humana, así que la orden se ejecuta contra un
+ * mercado abstracto. Comprar siempre encuentra vendedor: hace de puerto, igual
+ * que en la partida real, y por eso los materiales de obra se cobran con el
+ * mismo sobreprecio de importación. Sin ese vendedor de último recurso, aquí
+ * también habría bloqueo: el acero, el hormigón y el ladrillo se necesitan
+ * entre sí en círculo.
+ */
 function settleOrder(order) {
   const ref = db.prices[order.resource_code];
+  const anchor = catalog.byResource[order.resource_code].base_price;
+  const importPrice = IMPORTED.includes(order.resource_code)
+    ? anchor * IMPORT_MARKUP
+    : ref;
+
+  const ask = order.side === 'buy' ? Math.min(ref, importPrice) : ref;
   const crosses = order.side === 'buy'
-    ? order.unit_price >= ref * 0.98
+    ? order.unit_price >= importPrice * 0.98
     : order.unit_price <= ref * 1.02;
   if (!crosses) return;
 
   const left = order.qty - order.qty_filled;
-  const price = order.side === 'buy' ? Math.min(order.unit_price, ref) : Math.max(order.unit_price, ref);
+  const price = order.side === 'buy' ? Math.min(order.unit_price, ask) : Math.max(order.unit_price, ref);
   const gross = round2(left * price);
   const fee = round2(gross * 0.01);
 

@@ -1,7 +1,18 @@
 # Puesta en marcha
 
-Dos caminos: probarlo en local en dos minutos, o montar una partida real con
-Supabase y GitHub Pages.
+> **El proyecto ya está montado y conectado.** `src/js/config.js` apunta a un
+> Supabase real con el mundo `alpha` generado (64×64, 4.096 parcelas) y el tick
+> corriendo en pg_cron cada minuto. Lo único que queda por hacer a mano son los
+> dos pasos del apartado 2.6.
+>
+> | | |
+> |---|---|
+> | Proyecto | `UrbanHills` (`nviwpcehgltwfhjnphas`, eu-west-1) |
+> | URL | `https://nviwpcehgltwfhjnphas.supabase.co` |
+> | Mundo | `alpha` · 64×64 · tick de 300 s |
+>
+> El resto de este documento sirve para levantar otra partida desde cero, o
+> para entender qué hay montado.
 
 ---
 
@@ -108,11 +119,24 @@ key` **nunca** entra aquí.
 En *Authentication → URL Configuration* del panel, añade la URL de tu GitHub
 Pages a **Site URL** y a **Redirect URLs**.
 
-### 2.6 Publicar
+### 2.6 Lo que queda por hacer a mano
 
-Haz push a `main`. El flujo `.github/workflows/deploy.yml` publica el
-repositorio en GitHub Pages tal cual, sin compilar nada. Sólo hay que activarlo
-una vez, en *Settings → Pages → Source → **GitHub Actions***.
+Dos cosas que no se pueden hacer desde código y que hay que tocar en la web:
+
+1. **Activar GitHub Pages.** En *Settings → Pages → Source*, elegir
+   **GitHub Actions**. A partir de ahí, cada push a `main` publica el sitio con
+   `.github/workflows/deploy.yml`. Sin este paso el flujo falla al desplegar.
+
+2. **Autorizar la URL del sitio en Supabase.** En *Authentication → URL
+   Configuration*, poner la URL de GitHub Pages
+   (`https://<usuario>.github.io/UrbanHills/`) en **Site URL** y añadirla a
+   **Redirect URLs**. Sin esto, los enlaces de confirmación del correo
+   devuelven al jugador a `localhost` y el alta no se completa.
+
+   Conviene saber además que el SMTP que trae Supabase de serie está limitado a
+   unos pocos correos por hora: sirve para probar, no para abrir el juego al
+   público. Para eso hay que configurar un SMTP propio, o desactivar la
+   confirmación por correo en *Authentication → Providers → Email*.
 
 ---
 

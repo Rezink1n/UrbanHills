@@ -285,7 +285,7 @@
    "tier": 3,
    "unit": "cesta",
    "base_price": 24,
-   "is_storable": false,
+   "is_storable": true,
    "volume": 0,
    "icon": "🛒",
    "sort_order": 40
@@ -297,7 +297,7 @@
    "tier": 3,
    "unit": "menú",
    "base_price": 18,
-   "is_storable": false,
+   "is_storable": true,
    "volume": 0,
    "icon": "🍽️",
    "sort_order": 41
@@ -309,7 +309,7 @@
    "tier": 3,
    "unit": "entrada",
    "base_price": 22,
-   "is_storable": false,
+   "is_storable": true,
    "volume": 0,
    "icon": "🎬",
    "sort_order": 42

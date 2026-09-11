@@ -14,17 +14,25 @@ el barrio del vecino.
 
 ---
 
-## Probarlo en dos minutos
+## Estado
+
+El juego está **conectado a un Supabase real** con el mundo `alpha` generado
+(64×64, 4.096 parcelas) y el tick corriendo solo cada minuto en pg_cron.
+`src/js/config.js` ya apunta ahí.
+
+Quedan dos ajustes de panel que no se pueden hacer desde código: activar GitHub
+Pages y autorizar la URL del sitio en Supabase Auth. Están en
+**[docs/SETUP.md](docs/SETUP.md#26-lo-que-queda-por-hacer-a-mano)**.
+
+## Probarlo en local
 
 ```bash
 python3 -m http.server 8080
 ```
 
-Abre <http://localhost:8080>. Arranca en **modo demo**: genera un mundo en tu
-navegador y lo simula ahí mismo, sin ningún backend detrás. Puedes fundar
-empresa, comprar suelo, construir y producir.
-
-Para montar una partida multijugador de verdad, ver **[docs/SETUP.md](docs/SETUP.md)**.
+Abre <http://localhost:8080>. Se conectará al Supabase real. Si vacías las dos
+credenciales de `src/js/config.js`, arranca en **modo demo**: genera un mundo en
+tu navegador y lo simula ahí mismo, sin backend, con el reloj acelerado ×20.
 
 ---
 
@@ -92,9 +100,9 @@ empresa deja de cuadrar con su libro mayor.
 
 ---
 
-## Estado
+## Qué falta
 
-Base de datos, economía y simulación urbana funcionando y probadas. Cliente
-jugable con mapa, mercado y panel de ciudad. Pendientes las ampliaciones de
-edificio, la obra pública y las elecciones: ver
+Ampliaciones de edificio, obra pública municipal y elecciones: las tablas están,
+falta el flujo. El plan completo, con la deuda conocida y los cuatro fallos que
+sólo aparecieron al arrancar el mundo real, está en
 **[docs/ROADMAP.md](docs/ROADMAP.md)**.

@@ -60,10 +60,20 @@ export async function refreshWorld() {
 export async function refreshMine() {
   if (!state.world) return;
 
+  // Sin sesión no se pregunta: `rpc_my_state` sólo la puede ejecutar el rol
+  // `authenticated`, así que para un visitante anónimo la llamada fallaría y se
+  // llevaría por delante el arranque de la aplicación. Y un visitante anónimo
+  // tiene que poder ver el mapa.
+  const session = await db.getSession();
+  if (!session) {
+    setState({ session: null, company: null, inventory: {}, buildings: [], orders: [] });
+    return;
+  }
+
   const mine = await db.getMyState(state.world.id);
 
   setState({
-    session: mine.authenticated ? (state.session ?? true) : null,
+    session,
     company: mine.company ?? null,
     inventory: Object.fromEntries(
       (mine.inventory ?? []).map((i) => [i.resource_code, i]),

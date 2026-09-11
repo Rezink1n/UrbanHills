@@ -10,6 +10,12 @@
   flex-direction: column;
 }
 
+/* Los hijos directos son elementos flex, y un elemento flex no encoge por
+   debajo del ancho mínimo de su contenido. Sin esto, una tabla ancha dentro de
+   un .tablewrap estira la página entera y aparece scroll horizontal en móvil:
+   el contenedor con overflow no basta si quien lo contiene no puede encoger. */
+.app > * { min-width: 0; }
+
 /* --- Cabecera ------------------------------------------------------------- */
 
 .topbar {
@@ -236,7 +242,7 @@
 .table .num { text-align: right; font-variant-numeric: tabular-nums; font-family: var(--mono); }
 .table--click tbody tr { cursor: pointer; }
 
-.tablewrap { overflow-x: auto; }
+.tablewrap { overflow-x: auto; min-width: 0; }
 
 /* --- Catálogo de edificios ------------------------------------------------ */
 
@@ -263,14 +269,22 @@
 /* --- Páginas centradas ---------------------------------------------------- */
 
 .page {
+  /* Ancho DEFINIDO, no `max-width` + `margin:0 auto`. Con márgenes automáticos
+     en el eje transversal, un elemento flex se dimensiona a `fit-content`, y
+     `fit-content` nunca baja del ancho mínimo de su contenido: una tabla ancha
+     estiraba la página por encima de la ventana. Con `width` explícito la caja
+     mide lo que debe y el desbordamiento lo absorbe el .tablewrap, que es quien
+     tiene el scroll. */
+  width: 100%;
   max-width: 1180px;
-  margin: 0 auto;
+  margin-inline: auto;
   padding: var(--sp-5) var(--sp-4) var(--sp-6);
 }
 .page__head { margin-bottom: var(--sp-5); }
 .page__head p { color: var(--text-dim); margin-top: 6px; }
 
 .sheet {
+  width: 100%;
   max-width: 420px;
   margin: 8vh auto;
   padding: var(--sp-5);
