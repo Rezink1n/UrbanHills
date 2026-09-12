@@ -154,11 +154,12 @@ jobs:
             exit 1
           fi
 
-      # Pages en un repositorio PRIVADO exige plan de pago (Pro, Team o
-      # Enterprise). En el plan gratuito sólo se publica desde repos públicos.
-      # Sin esta comprobación, el paso siguiente falla con un error de API que
-      # no dice nada; así al menos se sabe qué hacer.
-      - name: ¿Se puede publicar este repositorio?
+      # Pages en un repositorio privado necesita plan de pago (Pro, Team o
+      # Enterprise). Con plan de pago funciona igual que en uno público, así que
+      # aquí NO se bloquea por ser privado: se informa y se deja que el paso
+      # siguiente lo intente. Si falla, el diagnóstico de después explica por qué.
+      - name: Contexto de publicación
+        id: contexto
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -175,41 +176,56 @@ jobs:
                    "https://api.github.com/repos/${GITHUB_REPOSITORY}/pages")
 
           echo "repositorio privado: $privado · API de Pages: HTTP $estado"
+          echo "privado=$privado" >> "$GITHUB_OUTPUT"
 
-          if [ "$estado" = "200" ]; then
+          if [ "$estado" = '200' ]; then
             echo 'Pages ya está activo.'
-            exit 0
+          elif [ "$privado" = 'true' ]; then
+            echo '::notice::Pages no está activo aún. Al ser un repositorio privado, activarlo requiere plan de pago (Pro, Team o Enterprise).'
+          else
+            echo 'Pages no está activo; el paso siguiente lo activará.'
           fi
 
-          if [ "$privado" = 'true' ]; then
-            {
-              echo '## ⛔ No se puede publicar todavía'
-              echo
-              echo 'El repositorio es **privado**, y GitHub Pages en repos privados'
-              echo 'requiere un plan de pago (Pro, Team o Enterprise).'
-              echo
-              echo 'Tres salidas:'
-              echo
-              echo '1. **Hacerlo público** — gratis, y lo natural para un juego que'
-              echo '   se juega en el navegador. La `anon key` de Supabase puede'
-              echo '   estar a la vista: es pública por diseño y está protegida por'
-              echo '   RLS. La `service_role key` no está en el repositorio.'
-              echo '2. **Pasar a GitHub Pro** y dejarlo privado.'
-              echo '3. **Publicar en otro sitio** (Cloudflare Pages, Netlify), que'
-              echo '   sí admiten repos privados en su plan gratuito.'
-            } >> "$GITHUB_STEP_SUMMARY"
-
-            echo '::error::el repositorio es privado y Pages requiere plan de pago; hazlo público o cambia de plan (ver el resumen del run)'
-            exit 1
-          fi
-
-          echo "Pages aún no está activo (HTTP $estado); el paso siguiente lo activará."
-
-      - uses: actions/configure-pages@v5
+      - name: Activar Pages si hace falta
+        id: pages
+        continue-on-error: true
+        uses: actions/configure-pages@v5
         with:
           # Activa Pages por API si aún no lo está, en vez de exigir que alguien
           # entre en Settings. Necesita el permiso `pages: write` de arriba.
           enablement: true
+
+      # Si activar Pages falló, el error de la API no dice nada útil. Aquí se
+      # traduce a qué hacer, y sólo entonces se corta el flujo.
+      - name: Por qué no se pudo activar Pages
+        if: steps.pages.outcome == 'failure'
+        run: |
+          {
+            echo '## ⛔ No se pudo activar GitHub Pages'
+            echo
+            if [ '${{ steps.contexto.outputs.privado }}' = 'true' ]; then
+              echo 'El repositorio es **privado**. Pages en repos privados requiere'
+              echo 'un plan de pago (Pro, Team o Enterprise); en el plan gratuito'
+              echo 'sólo se publica desde repositorios públicos.'
+              echo
+              echo 'Tres salidas:'
+              echo
+              echo '1. **Pasar a GitHub Pro** (~4 $/mes) y dejarlo privado. En cuanto'
+              echo '   esté contratado, basta con volver a lanzar este flujo.'
+              echo '2. **Hacer el repositorio público** — gratis. La `anon key` de'
+              echo '   Supabase puede estar a la vista: es pública por diseño y está'
+              echo '   protegida por RLS. La `service_role key` no está en el repo.'
+              echo '3. **Publicar en otro sitio** (Cloudflare Pages, Netlify), que sí'
+              echo '   admiten repositorios privados en su plan gratuito.'
+            else
+              echo 'El repositorio es público, así que no es un asunto de plan.'
+              echo 'Revisa que Actions tenga permiso de escritura sobre Pages en'
+              echo '*Settings → Actions → General → Workflow permissions*.'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          echo '::error::no se pudo activar GitHub Pages; el resumen del run explica las opciones'
+          exit 1
 
       - uses: actions/upload-pages-artifact@v3
         with:

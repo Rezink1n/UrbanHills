@@ -145,17 +145,21 @@ Qué hace, en orden:
 Sólo se dispara si el commit toca algo que afecta al sitio (`index.html`,
 `src/**` o el propio flujo): cambiar la documentación no provoca un despliegue.
 
-> **La condición.** GitHub Pages en un repositorio **privado** exige plan de
-> pago (Pro, Team o Enterprise). En el plan gratuito sólo se publica desde
-> repositorios públicos. El flujo lo detecta antes de intentarlo y falla con un
-> mensaje que explica las tres salidas: hacer el repositorio público, pasar a
-> GitHub Pro, o publicar en Cloudflare Pages o Netlify, que sí admiten repos
-> privados gratis.
+> **La condición.** GitHub Pages en un repositorio **privado** requiere plan de
+> pago (Pro, Team o Enterprise). Con plan de pago funciona igual que en uno
+> público; en el plan gratuito, sólo se publica desde repositorios públicos.
 >
-> Si se hace público, la `anon key` de Supabase queda a la vista: eso es
-> correcto y no es un problema. Es pública por diseño y lo único que permite es
-> hablar con PostgREST bajo las políticas de RLS. La `service_role key` no está
-> en el repositorio.
+> El flujo no bloquea por ser privado —sería incorrecto, porque con Pro
+> funciona— sino que intenta activar Pages y, si no puede, escribe en el resumen
+> del run por qué y qué hacer: pasar a Pro, hacer el repositorio público, o
+> publicar en Cloudflare Pages o Netlify, que admiten repos privados gratis.
+> Después de contratar el plan basta con volver a lanzar el flujo: no hay que
+> cambiar nada.
+>
+> Si se opta por hacerlo público, la `anon key` de Supabase queda a la vista:
+> eso es correcto y no es un problema. Es pública por diseño y lo único que
+> permite es hablar con PostgREST bajo las políticas de RLS. La
+> `service_role key` no está en el repositorio.
 
 Y hay un requisito que no se puede automatizar: **el flujo tiene que estar en la
 rama por defecto**. GitHub sólo reconoce los flujos que viven en `main`, así que
