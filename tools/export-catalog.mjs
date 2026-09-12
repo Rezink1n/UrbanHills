@@ -65,8 +65,12 @@ if (!resources.length || !buildingTypes.length || !recipes.length) {
 }
 
 mkdirSync(dirname(out), { recursive: true });
+// Sin fecha de generación a propósito. Llevaba una, y hacía que el fichero
+// cambiara cada día aunque el contenido fuera idéntico: la comprobación de CI
+// "¿está el catálogo al día?" fallaba en falso a partir del día siguiente a
+// exportarlo. Un artefacto generado tiene que ser función pura de su entrada;
+// cuándo cambió ya lo cuenta el historial de git.
 writeFileSync(out, JSON.stringify({
-  generatedAt: new Date().toISOString().slice(0, 10),
   note: 'Generado por tools/export-catalog.mjs desde supabase/migrations. No editar a mano.',
   resources, buildingTypes, recipes,
 }, null, 1) + '\n');
