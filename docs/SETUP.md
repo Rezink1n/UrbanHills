@@ -119,24 +119,62 @@ key` **nunca** entra aquí.
 En *Authentication → URL Configuration* del panel, añade la URL de tu GitHub
 Pages a **Site URL** y a **Redirect URLs**.
 
-### 2.6 Lo que queda por hacer a mano
+### 2.6 Despliegue: automático, con una condición
 
-Dos cosas que no se pueden hacer desde código y que hay que tocar en la web:
+El flujo `.github/workflows/deploy.yml` publica el sitio solo. No hay que entrar
+en *Settings → Pages*: `actions/configure-pages` lleva `enablement: true`, así
+que activa Pages por API en su primera ejecución.
 
-1. **Activar GitHub Pages.** En *Settings → Pages → Source*, elegir
-   **GitHub Actions**. A partir de ahí, cada push a `main` publica el sitio con
-   `.github/workflows/deploy.yml`. Sin este paso el flujo falla al desplegar.
+Qué hace, en orden:
 
-2. **Autorizar la URL del sitio en Supabase.** En *Authentication → URL
-   Configuration*, poner la URL de GitHub Pages
-   (`https://<usuario>.github.io/UrbanHills/`) en **Site URL** y añadirla a
-   **Redirect URLs**. Sin esto, los enlaces de confirmación del correo
-   devuelven al jugador a `localhost` y el alta no se completa.
+1. **Comprueba el cliente**: sintaxis de los 22 módulos, que `catalog.json` sea
+   JSON válido y no esté vacío, que exista todo lo que referencia `index.html`,
+   que no haya rutas absolutas (romperían bajo `/UrbanHills/`), y avisa si se va
+   a publicar sin credenciales de Supabase —es decir, en modo demo— por si es
+   un descuido.
+2. **Empaqueta** `index.html`, `.nojekyll` y `src/` en `_site`, y copia
+   `index.html` como `404.html` para que cualquier ruta desconocida devuelva el
+   juego (el router va por hash).
+3. **Lo sirve bajo subdirectorio y lo comprueba**, replicando cómo lo sirve
+   Pages en un repositorio de proyecto. Es ahí donde se ven las rutas mal
+   puestas, no en la raíz.
+4. **Activa Pages si hace falta y publica.**
+5. **Comprueba que el sitio responde 200** y escribe la URL en el resumen del
+   run.
 
-   Conviene saber además que el SMTP que trae Supabase de serie está limitado a
-   unos pocos correos por hora: sirve para probar, no para abrir el juego al
-   público. Para eso hay que configurar un SMTP propio, o desactivar la
-   confirmación por correo en *Authentication → Providers → Email*.
+Sólo se dispara si el commit toca algo que afecta al sitio (`index.html`,
+`src/**` o el propio flujo): cambiar la documentación no provoca un despliegue.
+
+> **La condición.** GitHub Pages en un repositorio **privado** exige plan de
+> pago (Pro, Team o Enterprise). En el plan gratuito sólo se publica desde
+> repositorios públicos. El flujo lo detecta antes de intentarlo y falla con un
+> mensaje que explica las tres salidas: hacer el repositorio público, pasar a
+> GitHub Pro, o publicar en Cloudflare Pages o Netlify, que sí admiten repos
+> privados gratis.
+>
+> Si se hace público, la `anon key` de Supabase queda a la vista: eso es
+> correcto y no es un problema. Es pública por diseño y lo único que permite es
+> hablar con PostgREST bajo las políticas de RLS. La `service_role key` no está
+> en el repositorio.
+
+Y hay un requisito que no se puede automatizar: **el flujo tiene que estar en la
+rama por defecto**. GitHub sólo reconoce los flujos que viven en `main`, así que
+hasta que la rama de trabajo se fusione no hay despliegue ni botón de
+*Run workflow*.
+
+### 2.7 Lo único que sigue siendo manual
+
+**Autorizar la URL del sitio en Supabase Auth.** En *Authentication → URL
+Configuration*, poner la URL de Pages
+(`https://rezink1n.github.io/UrbanHills/`) en **Site URL** y añadirla a
+**Redirect URLs**. Sin esto, los enlaces de confirmación del correo devuelven al
+jugador a `localhost` y el alta no se completa. No hay forma de hacerlo desde
+código con las herramientas disponibles.
+
+Conviene saber además que el SMTP que trae Supabase de serie está limitado a
+unos pocos correos por hora: sirve para probar, no para abrir el juego al
+público. Para eso hay que configurar un SMTP propio, o desactivar la
+confirmación por correo en *Authentication → Providers → Email*.
 
 ---
 

@@ -1,34 +1,123 @@
 # =============================================================================
-# Publica el juego en GitHub Pages.
+# Publica el juego en GitHub Pages, sin intervención manual.
 #
-# No hay paso de compilación: el repositorio ES el sitio. Se sube tal cual,
-# excluyendo lo que no pinta nada en un navegador (migraciones, herramientas).
+# No hay paso de compilación: el repositorio ES el sitio. Se empaqueta tal cual,
+# dejando fuera lo que no pinta nada en un navegador (migraciones, herramientas,
+# documentación).
+#
+# El flujo activa Pages por sí mismo la primera vez (`enablement: true`), así
+# que no hay que tocar Settings → Pages a mano. Lo único que hace falta es que
+# este fichero esté en la rama por defecto: GitHub sólo reconoce los flujos que
+# viven ahí.
 # =============================================================================
 name: Desplegar en GitHub Pages
 
 on:
   push:
     branches: [main]
+    # Un cambio que no toca el sitio no merece un despliegue.
+    paths:
+      - 'index.html'
+      - '.nojekyll'
+      - 'src/**'
+      - '.github/workflows/deploy.yml'
   workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
+  pages: write      # publicar, y activar Pages la primera vez
+  id-token: write   # deploy-pages se autentica con OIDC
 
-# Si se empujan dos commits seguidos, sólo se publica el último; pero no se
-# cancela un despliegue a medias, que dejaría Pages en un estado raro.
+# Si entran dos commits seguidos, sólo se publica el último. Pero no se cancela
+# un despliegue a medias: dejaría Pages en un estado a medio escribir.
 concurrency:
   group: pages
   cancel-in-progress: false
 
 jobs:
-  build:
+  # ---------------------------------------------------------------------------
+  # 1 · Comprobar antes de publicar
+  # ---------------------------------------------------------------------------
+  # Barato y rápido: sólo lo que puede romper el sitio publicado. Las pruebas de
+  # base de datos viven en check.yml, porque guardan el servidor, no el sitio.
+  verify:
+    name: Comprobar el cliente
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Preparar el sitio
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Sintaxis de los módulos
+        run: |
+          fallos=0
+          for f in $(find src/js -name '*.js'); do
+            node --check "$f" || { echo "::error file=$f::error de sintaxis"; fallos=1; }
+          done
+          exit $fallos
+
+      - name: El catálogo es JSON válido y no está vacío
+        run: |
+          node -e '
+            const c = require("./src/data/catalog.json");
+            const faltan = ["resources", "buildingTypes", "recipes"]
+              .filter((k) => !Array.isArray(c[k]) || c[k].length === 0);
+            if (faltan.length) {
+              console.log("::error::catalog.json no trae: " + faltan.join(", "));
+              process.exit(1);
+            }
+            console.log(`catálogo: ${c.resources.length} recursos, ` +
+                        `${c.buildingTypes.length} edificios, ${c.recipes.length} recetas`);
+          '
+
+      - name: Todo lo que index.html referencia existe
+        run: |
+          fallos=0
+          # Sólo rutas locales: se descartan las que llevan esquema (data:, https:).
+          for ref in $(grep -oE '(href|src)="[^"]+"' index.html \
+                       | sed -E 's/.*="([^"]+)"/\1/' \
+                       | grep -vE '^[a-z]+:' ); do
+            ruta="${ref#./}"
+            if [ ! -f "$ruta" ]; then
+              echo "::error file=index.html::index.html referencia $ref y no existe"
+              fallos=1
+            fi
+          done
+          exit $fallos
+
+      - name: Ninguna ruta absoluta (rompería bajo /UrbanHills/)
+        run: |
+          # Pages sirve un repo de proyecto en un subdirectorio, así que una ruta
+          # que empiece por "/" apunta fuera del sitio y da 404.
+          if grep -rnE '(src|href)="/[^/]' index.html src/ 2>/dev/null; then
+            echo "::error::hay rutas absolutas; usa rutas relativas (./src/...)"
+            exit 1
+          fi
+          echo 'sin rutas absolutas'
+
+      - name: Avisar si Supabase no está configurado
+        run: |
+          # No es un error: un fork sin backend arranca en modo demo a propósito.
+          # Pero publicar sin querer en modo demo desconcierta, así que se avisa.
+          if grep -qE "^export const SUPABASE_URL\s+= '';" src/js/config.js; then
+            echo "::warning file=src/js/config.js::sin credenciales de Supabase: el sitio se publicará en MODO DEMO"
+          else
+            echo 'Supabase configurado'
+          fi
+
+  # ---------------------------------------------------------------------------
+  # 2 · Empaquetar el sitio
+  # ---------------------------------------------------------------------------
+  build:
+    name: Empaquetar
+    needs: verify
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Preparar _site
         run: |
           mkdir -p _site
           cp -r index.html .nojekyll src _site/
@@ -36,15 +125,101 @@ jobs:
           # hash, cualquier ruta desconocida debe devolver el propio juego.
           cp index.html _site/404.html
 
-      - name: Comprobar que el catálogo está exportado
-        run: test -s _site/src/data/catalog.json
+      - name: Servirlo bajo subdirectorio y comprobar que carga
+        run: |
+          # Se reproduce cómo lo sirve Pages —en /UrbanHills/, no en la raíz—
+          # porque es justo ahí donde se notan las rutas mal puestas.
+          mkdir -p /tmp/pages/${GITHUB_REPOSITORY#*/}
+          cp -r _site/. /tmp/pages/${GITHUB_REPOSITORY#*/}/
+          python3 -m http.server 8099 --bind 127.0.0.1 --directory /tmp/pages &
+          servidor=$!
+          # El servidor tarda un instante en aceptar conexiones.
+          for i in $(seq 1 20); do
+            curl -sf -o /dev/null "http://127.0.0.1:8099/${GITHUB_REPOSITORY#*/}/" && break
+            sleep 0.5
+          done
+
+          base="http://127.0.0.1:8099/${GITHUB_REPOSITORY#*/}"
+          fallos=0
+          for ruta in / 404.html src/js/main.js src/js/config.js \
+                      src/css/app.css src/data/catalog.json; do
+            codigo=$(curl -s -o /dev/null -w '%{http_code}' "$base/$ruta")
+            echo "  $codigo  $ruta"
+            [ "$codigo" = "200" ] || fallos=1
+          done
+
+          kill $servidor
+          if [ $fallos -ne 0 ]; then
+            echo "::error::el sitio empaquetado no sirve todos sus ficheros bajo subdirectorio"
+            exit 1
+          fi
+
+      # Pages en un repositorio PRIVADO exige plan de pago (Pro, Team o
+      # Enterprise). En el plan gratuito sólo se publica desde repos públicos.
+      # Sin esta comprobación, el paso siguiente falla con un error de API que
+      # no dice nada; así al menos se sabe qué hacer.
+      - name: ¿Se puede publicar este repositorio?
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          api() {
+            curl -s -H "Authorization: Bearer $GH_TOKEN" \
+                 -H 'Accept: application/vnd.github+json' "$@"
+          }
+
+          # Se pregunta a la API en vez de leer github.event.repository, que no
+          # está en el payload de todos los disparadores (workflow_dispatch).
+          privado=$(api "https://api.github.com/repos/${GITHUB_REPOSITORY}" \
+                    | python3 -c 'import json,sys; print(str(json.load(sys.stdin).get("private", False)).lower())')
+          estado=$(api -o /dev/null -w '%{http_code}' \
+                   "https://api.github.com/repos/${GITHUB_REPOSITORY}/pages")
+
+          echo "repositorio privado: $privado · API de Pages: HTTP $estado"
+
+          if [ "$estado" = "200" ]; then
+            echo 'Pages ya está activo.'
+            exit 0
+          fi
+
+          if [ "$privado" = 'true' ]; then
+            {
+              echo '## ⛔ No se puede publicar todavía'
+              echo
+              echo 'El repositorio es **privado**, y GitHub Pages en repos privados'
+              echo 'requiere un plan de pago (Pro, Team o Enterprise).'
+              echo
+              echo 'Tres salidas:'
+              echo
+              echo '1. **Hacerlo público** — gratis, y lo natural para un juego que'
+              echo '   se juega en el navegador. La `anon key` de Supabase puede'
+              echo '   estar a la vista: es pública por diseño y está protegida por'
+              echo '   RLS. La `service_role key` no está en el repositorio.'
+              echo '2. **Pasar a GitHub Pro** y dejarlo privado.'
+              echo '3. **Publicar en otro sitio** (Cloudflare Pages, Netlify), que'
+              echo '   sí admiten repos privados en su plan gratuito.'
+            } >> "$GITHUB_STEP_SUMMARY"
+
+            echo '::error::el repositorio es privado y Pages requiere plan de pago; hazlo público o cambia de plan (ver el resumen del run)'
+            exit 1
+          fi
+
+          echo "Pages aún no está activo (HTTP $estado); el paso siguiente lo activará."
 
       - uses: actions/configure-pages@v5
+        with:
+          # Activa Pages por API si aún no lo está, en vez de exigir que alguien
+          # entre en Settings. Necesita el permiso `pages: write` de arriba.
+          enablement: true
+
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
 
+  # ---------------------------------------------------------------------------
+  # 3 · Publicar
+  # ---------------------------------------------------------------------------
   deploy:
+    name: Publicar
     needs: build
     runs-on: ubuntu-latest
     environment:
@@ -53,3 +228,27 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: Comprobar que el sitio responde
+        run: |
+          url='${{ steps.deployment.outputs.page_url }}'
+          # Pages tarda unos segundos en propagar el despliegue por su CDN.
+          for i in $(seq 1 12); do
+            codigo=$(curl -s -o /dev/null -w '%{http_code}' -L "$url")
+            [ "$codigo" = "200" ] && break
+            sleep 10
+          done
+          echo "$url -> $codigo"
+          [ "$codigo" = "200" ] || {
+            echo "::warning::el sitio aún no responde 200; puede tardar en propagarse"
+          }
+
+      - name: Resumen
+        run: |
+          {
+            echo '## 🏙️ UrbanHills publicado'
+            echo
+            echo "**${{ steps.deployment.outputs.page_url }}**"
+            echo
+            echo "Commit \`${GITHUB_SHA::7}\` · $(date -u '+%Y-%m-%d %H:%M UTC')"
+          } >> "$GITHUB_STEP_SUMMARY"

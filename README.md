@@ -20,9 +20,12 @@ El juego está **conectado a un Supabase real** con el mundo `alpha` generado
 (64×64, 4.096 parcelas) y el tick corriendo solo cada minuto en pg_cron.
 `src/js/config.js` ya apunta ahí.
 
-Quedan dos ajustes de panel que no se pueden hacer desde código: activar GitHub
-Pages y autorizar la URL del sitio en Supabase Auth. Están en
-**[docs/SETUP.md](docs/SETUP.md#26-lo-que-queda-por-hacer-a-mano)**.
+El despliegue a GitHub Pages está **automatizado** en
+`.github/workflows/deploy.yml`: comprueba el cliente, empaqueta, verifica el
+sitio servido bajo subdirectorio, activa Pages por API si hace falta y publica.
+Con una condición: Pages en repositorios privados exige plan de pago, así que
+este repo tiene que ser público (o cambiar de plan). Está explicado en
+**[docs/SETUP.md](docs/SETUP.md#26-despliegue-automático-con-una-condición)**.
 
 ## Probarlo en local
 

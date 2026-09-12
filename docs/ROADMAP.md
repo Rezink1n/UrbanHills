@@ -18,8 +18,11 @@ Rendimiento medido en el proyecto real:
 | Un tick del mundo | 135–570 ms, mediana ~170 ms |
 | Generar un mundo 64×64 | 28,6 s (operación única) |
 
-Falta activar GitHub Pages y autorizar la URL del sitio en Supabase Auth: son
-dos ajustes de panel, están en [SETUP.md](./SETUP.md#26-lo-que-queda-por-hacer-a-mano).
+El despliegue a Pages está automatizado (comprobaciones del cliente, empaquetado,
+verificación bajo subdirectorio, activación por API y publicación). Bloqueado
+por una condición de plan: Pages en repos privados es de pago. Queda además un
+paso que no se puede automatizar, autorizar la URL del sitio en Supabase Auth.
+Ambas cosas en [SETUP.md](./SETUP.md#26-despliegue-automático-con-una-condición).
 
 ---
 
@@ -57,7 +60,9 @@ Postgres 17.
 **Infraestructura**
 
 - Proyecto de Supabase creado, migrado y con el mundo generado.
-- Despliegue a GitHub Pages sin paso de compilación.
+- Despliegue a GitHub Pages automatizado y sin paso de compilación: activa Pages
+  por API, comprueba el cliente antes de publicar y verifica el sitio servido
+  bajo subdirectorio, que es donde se notan las rutas mal puestas.
 - CI que aplica las migraciones de cero, corre la prueba de humo, imprime el
   balanceo y verifica que el catálogo exportado no se ha quedado atrás.
 
